@@ -15,6 +15,11 @@ theme_umap <- theme(axis.text.x = element_text(size=15), axis.title.x = element_
            axis.text.y = element_text(size=15), axis.title.y = element_text(size=15), 
            plot.title = element_text(size = 20, face = "bold"), legend.title = element_text(size = 15), 
            legend.text = element_text(size = 10))
+no_bkg <- theme(axis.line = element_line(colour = "black"),
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.border = element_blank(),
+                panel.background = element_blank()) 
 
 
 
@@ -24,18 +29,14 @@ ggsave1 <- function(filename, plot, n.clusters=30, type="h") {  # custom ggsave 
     width = 14 / 30 * max(n.clusters, 30)
   }
   if (type == "v") {
-    height = 10 / 30 * max(n.clusters, 30)
+    height = 14 / 30 * max(n.clusters, 30)
     width = 14
   }
   if (type == "u") {
     height = 10
     width = 10 + 2 * ceiling(n.clusters / 13)
   }
-  no_bkg <- theme(axis.line = element_line(colour = "black"),
-                  panel.grid.major = element_blank(),
-                  panel.grid.minor = element_blank(),
-                  panel.border = element_blank(),
-                  panel.background = element_blank()) 
+
   ggsave(filename = filename, plot = plot + no_bkg, width = width, height = height) #saves plot with custom dimensions 
 }
 
@@ -72,7 +73,7 @@ generatePlotsByMetric <- function(obj, lbls, metric.name.pg, metric.name, name.s
   labels_horizontal <- scale_x_discrete(labels=lbls)
   labels_vertical <- scale_y_discrete(labels=lbls)
   
-  mean_plot <- stat_summary(fun=mean, geom="point", shape=23, fill="blue", size=3)
+  mean_plot <- stat_summary(fun="mean", geom="point", shape=23, fill="blue", size=3)
   
   if (metric.name.pg == "percent_mito") {
     axis_breaks_vertical <- scale_x_continuous(breaks=seq(0, 80, 5))
@@ -111,13 +112,11 @@ generatePlotsByMetric <- function(obj, lbls, metric.name.pg, metric.name, name.s
   }
   
   #boxplot by cluster
-  boxplot <- ggplot(subset(data, metric > 0), aes(x=clusters, y=metric)) + geom_boxplot() + theme_horizontal + mean_plot + labels_horizontal + horizontal_line + axis_breaks_horizontal + ttl
+  boxplot <- ggplot(data, aes(x=clusters, y=metric)) + geom_boxplot() + theme_horizontal + mean_plot + labels_horizontal + horizontal_line + axis_breaks_horizontal + ttl
   #joyplot by cluster
-  joyplot <- ggplot(subset(data, metric > 0), aes(x=metric, y=clusters)) + geom_density_ridges(jittered_points = TRUE,
-                                                                                               position = position_points_jitter(width = 0.05, height = 0),
-                                                                                               point_shape = '|', point_size = 1, point_alpha = 0.5, alpha = 0.7) + theme_vertical+ mean_plot + labels_vertical + vertical_line + axis_breaks_vertical + ttl
+  joyplot <- ggplot(data, aes(x=metric, y=clusters)) + geom_density_ridges(scale = 0.9) + theme_vertical + mean_plot + labels_vertical + vertical_line + axis_breaks_vertical + ttl
   #violin plot by cluster
-  vnlplot <- ggplot(subset(data, metric > 0), aes(x=clusters, y=metric)) + geom_violin() + theme_horizontal + mean_plot + labels_horizontal + horizontal_line + axis_breaks_horizontal + ttl
+  vnlplot <- ggplot(data, aes(x=clusters, y=metric)) + geom_violin() + theme_horizontal + mean_plot + labels_horizontal + horizontal_line + axis_breaks_horizontal + ttl
   #umap
   umapplot <- DimPlotContinuous(obj, metric.name.pg, metric.name, lbls, log2 = is.log2)
   
@@ -162,6 +161,10 @@ generateFCPlots <- function(obj, lbls) {
   n.clusters <- length(levels(obj$louvain_labels))
   ggsave1(filename = paste0(results.dir, "!p_filterplot.pdf"), plot=fltplot, n.clusters = n.clusters, type = "u")
   ggsave1(filename = paste0(results.dir, "!p_barplot.pdf"), plot=freqplot, n.clusters=n.clusters, type = "h")
+  
+  pdf(paste0(results.dir, "!p_filterplot_pdf.pdf"),width=10 + 2.5 * ceiling(n.clusters / 13),height=10,useDingbats = FALSE)
+  print(fltplot + no_bkg)
+  dev.off()
 }
 
 generatePlots <- function(obj, cell.types, joint=FALSE, no.ct.labels=FALSE) { #main plots function
