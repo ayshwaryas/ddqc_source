@@ -1,42 +1,5 @@
-library(ggplot2)
-library(ggridges)
-library(cowplot)
-library(dplyr)
+source("figures_code/config.R")
 
-PATH <- "/Volumes/easystore/primes_storage/"
-DATA.DIR <- paste0(PATH, "output_pg/")
-
-theme_horizontal <- theme(axis.text.x = element_text(angle = 45, size=15, hjust=1, face="bold"), 
-                          axis.text.y = element_text(size=15), axis.title.y = element_text(size=15), 
-                          legend.position="none", axis.title.x=element_blank(), plot.title = element_text(size = 20, face = "bold"))
-theme_horizontal_with_legend <- theme(axis.text.x = element_text(angle = 45, size=15, hjust=1, face="bold"), 
-                                      axis.text.y = element_text(size=15), axis.title.y = element_text(size=15), 
-                                      axis.title.x=element_blank(), plot.title = element_text(size = 20, face = "bold"))
-theme_vertical <- theme(axis.text.x = element_text(size=15), axis.text.y = element_text(size=15, face="bold"), 
-                        axis.title.x = element_text(size=15), legend.position="none", axis.title.y=element_blank(), 
-                        plot.title = element_text(size = 20, face = "bold"))
-
-
-ggsave1 <- function(filename, plot, n.tissues=30, type="h") {  # custom ggsave function
-  if (type == "h") {
-    height = 10
-    width = 14 / 30 * max(n.tissues, 30)
-  }
-  if (type == "v") {
-    height = 10 / 30 * max(n.tissues, 30)
-    width = 14
-  }
-  if (type == "u") {
-    height = 10
-    width = 10 + 2 * ceiling(n.tissues / 13)
-  }
-  no_bkg <- theme(axis.line = element_line(colour = "black"),
-                  panel.grid.major = element_blank(),
-                  panel.grid.minor = element_blank(),
-                  panel.border = element_blank(),
-                  panel.background = element_blank()) 
-  ggsave(filename = filename, plot = plot + no_bkg, width = width, height = height) #saves plot with custom dimensions 
-}
 
 generatePlotsByMetric <- function(obj, metric.name.pg, metric.name, name.suffix) { #different plots for QC metrics
   mean_plot <- stat_summary(fun=mean, geom="point", shape=23, fill="blue", size=3)
@@ -58,7 +21,7 @@ generatePlotsByMetric <- function(obj, metric.name.pg, metric.name, name.suffix)
     axis_breaks_horizontal <- NULL
   }
   
-  n.tissues <- length(levels(obj$tissue))
+  n.tissues <- length(unique(obj$tissue))
   data <- data.frame(metric=obj[[metric.name.pg]], tissues=obj$tissue) 
   colnames(data) <- c("metric", "tissues") #rename data columns
   
@@ -78,19 +41,17 @@ generatePlotsByMetric <- function(obj, metric.name.pg, metric.name, name.suffix)
   }
   
   #boxplot by tissue
-  boxplot <- ggplot(subset(data, metric > 0), aes(x=tissues, y=metric)) + geom_boxplot() + theme_horizontal + mean_plot + horizontal_line + axis_breaks_horizontal + ttl
+  boxplot <- ggplot(data, aes(x=tissues, y=metric)) + geom_boxplot() + theme_horizontal + mean_plot + horizontal_line + axis_breaks_horizontal + ttl
   #joyplot by tissue
-  joyplot <- ggplot(subset(data, metric > 0), aes(x=metric, y=tissues)) + geom_density_ridges(jittered_points = TRUE,
-                                                                                              position = position_points_jitter(width = 0.05, height = 0),
-                                                                                              point_shape = '|', point_size = 1, point_alpha = 0.5, alpha = 0.7) + theme_vertical + mean_plot + vertical_line + axis_breaks_vertical + ttl
+  joyplot <- ggplot(data, aes(x=metric, y=tissues)) + geom_density_ridges(scale = 0.9) + theme_vertical + mean_plot + vertical_line + axis_breaks_vertical + ttl
   #violin plot by tissue
-  vnlplot <- ggplot(subset(data, metric > 0), aes(x=tissues, y=metric)) + geom_violin() + theme_horizontal + mean_plot + horizontal_line + axis_breaks_horizontal + ttl
+  vnlplot <- ggplot(data, aes(x=tissues, y=metric)) + geom_violin() + theme_horizontal + mean_plot + horizontal_line + axis_breaks_horizontal + ttl
 
   
   #save plots 
-  ggsave1(filename=paste0(results.dir, "box_", name.suffix), plot=boxplot + axis_labels_horizontal, n.tissues = n.tissues, type = "h") 
-  ggsave1(filename=paste0(results.dir, "density_", name.suffix), plot=joyplot + axis_labels_vertical, n.tissues = n.tissues, type = "v") 
-  ggsave1(filename=paste0(results.dir, "violin_", name.suffix), plot=vnlplot + axis_labels_horizontal, n.tissues = n.tissues, type = "h")
+  ggsave1(filename=paste0(results.dir, "box_", name.suffix), plot=boxplot + axis_labels_horizontal, n.clusters = n.tissues, type = "h") 
+  ggsave1(filename=paste0(results.dir, "density_", name.suffix), plot=joyplot + axis_labels_vertical, n.clusters = n.tissues, type = "v") 
+  ggsave1(filename=paste0(results.dir, "violin_", name.suffix), plot=vnlplot + axis_labels_horizontal, n.clusters = n.tissues, type = "h")
 }
 
 generatePlots <- function(obj) { #main plots function
@@ -103,7 +64,7 @@ generatePlots <- function(obj) { #main plots function
 }
 
 generatePlotsPG <- function(project) {
-  data.path <- paste0(DATA.DIR, project, "/")
+  data.path <- paste0(OUTPUT.DIR, project, "/")
   results.dir <<- paste0(PATH, "figure1_plots/", project, "/")
   
   if (!file.exists(paste0(results.dir, "!cells.csv"))) {
@@ -134,7 +95,10 @@ generatePlotsPG <- function(project) {
 }
 
 
-for (prj in list.dirs(DATA.DIR, full.names = FALSE, recursive = FALSE)) {
+for (prj in list.dirs(OUTPUT.DIR, full.names = FALSE, recursive = FALSE)) {
+  if (prj != prj) {
+    next
+  }
   generatePlotsPG(prj)
 }
 
