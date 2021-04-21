@@ -159,9 +159,6 @@ for task in ("human_other/Adipose",
              "tabula_muris/Trachea",
              "human_other/Heart_Circulation"):
 
-    if task != "tabula_muris/Heart_and_Aorta":
-        continue
-
     proj, tiss = task.split("/")
     for method in range(4):
         remake(proj, method, tiss)
