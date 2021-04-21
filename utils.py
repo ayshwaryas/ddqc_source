@@ -31,7 +31,7 @@ def save_to_csv(adata, path):
 
 
 # convert marker_dict to pandas df
-def marker_dict_to_df(marker_dict, min_log_fc=0.25, min_pct=25, max_pval=0.05):
+def marker_dict_to_df(marker_dict, min_log_fc=0.25, min_pct=25, max_qval=0.05):
     frames = []
     # iterate through all keys in the markers dict
     for cl in marker_dict.keys():
@@ -41,7 +41,7 @@ def marker_dict_to_df(marker_dict, min_log_fc=0.25, min_pct=25, max_pval=0.05):
             df['up/down'] = d
 
             # filter markers based on log_fc and pct
-            df = df[(df["t_pval"] <= max_pval) & (df["log2FC"] >= min_log_fc) & (
+            df = df[(df["t_qval"] <= max_qval) & (df["log2FC"] >= min_log_fc) & (
                     (df["percentage"] >= min_pct) | (df["percentage_other"] >= min_pct))]
 
             frames.append(df)

@@ -103,7 +103,7 @@ human_other,Brain,TRUE,Unknown
 human_other,Blood,TRUE,Absolute
 human_other,Olfactory_Epithelium,TRUE,Unknown
 human_other,Heart_Circulation,TRUE,human/other/heart/annotations_pg.csv
-human_other,krasnow_lung,TRUE,Unknown
+human_other,krasnow_lung,TRUE,human/other/krasnow_lung/annotations_pg.csv
 human_other,skin_cellbender,TRUE,Unknown
 human_tissue_atlas,Adipose,TRUE,human/HTA/Adipose/annotations_pg.csv
 human_tissue_atlas,Adrenal-Gland,TRUE,human/HTA/Adrenal-Gland/annotations_pg.csv
