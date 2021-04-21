@@ -1,4 +1,5 @@
 import subprocess
+import traceback
 from collections import Counter
 
 import numpy as np
@@ -137,28 +138,15 @@ def remake(project, task_id, tissue=None):
             subprocess.check_output("Rscript plotting.R {} {} {}".format(task_name, results_dir, "joint"),
                                     shell=True).decode('UTF-8'))
 
+log = open("log.txt", "w+")
 
-for task in ("human_other/adipose",
-             "human_other/kidney2",
-             "human_other/liver",
-             "human_other/krasnow_Lung",
-             "PanglaoDB/Bone_Marrow",
-             "PanglaoDB/Mammary_Gland",
-             "PanglaoDB/Pancreatic_Islets",
-             "PanglaoDB/Substantia_Nigra",
-             "PanglaoDB/Testis",
-             "tabula_muris_smartseq2/Bone_Marrow",
-             "tabula_muris_smartseq2/Cerebellum",
-             "tabula_muris_smartseq2/Colon",
-             "tabula_muris_smartseq2/Heart_and_Aorta",
-             "tabula_muris/Bladder",
-             "tabula_muris/Heart_and_Aorta",
-             "tabula_muris/Lung",
-             "tabula_muris/Mammary_Gland",
-             "tabula_muris/Tongue",
-             "tabula_muris/Trachea",
-             "human_other/Heart_Circulation"):
 
-    proj, tiss = task.split("/")
+for i, row in get_project_info().iterrows():
+    proj = row["project"]
+    tiss = row["tissue"]
+
     for method in range(4):
-        remake(proj, method, tiss)
+        try:
+            remake(proj, method, tiss)
+        except Exception as e:
+            print("FAILED {} {} method {}:\n{}".format(proj, tiss, method, traceback.format_exc()), file=log)
