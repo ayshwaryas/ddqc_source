@@ -138,10 +138,10 @@ def remake(project, task_id, tissue=None):
                                     shell=True).decode('UTF-8'))
 
 
-for task in ("human_other/Adipose",
-             "human_other/Kidney2",
-             "human_other/Liver",
-             "human_other/Krasnow_Lung",
+for task in ("human_other/adipose",
+             "human_other/kidney2",
+             "human_other/liver",
+             "human_other/krasnow_Lung",
              "PanglaoDB/Bone_Marrow",
              "PanglaoDB/Mammary_Gland",
              "PanglaoDB/Pancreatic_Islets",
