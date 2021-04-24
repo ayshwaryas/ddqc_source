@@ -1,3 +1,4 @@
+import os
 import subprocess
 import traceback
 from collections import Counter
@@ -91,9 +92,7 @@ def assign_cell_types(adata, markers, tissue, min_sg=3):
     return pd.DataFrame.from_dict(clusters_dict)  # convert dict to pandas df
 
 
-def remake(project, task_id, tissue=None):
-    if tissue is None:
-        tissue = get_project_info(project, task_id=task_id // MC_TASKS_PER_TISSUE)[0]
+def remake(project, task_id, tissue, annotations):
 
     if task_id < 3:
         method, param = MC_METHODS[task_id % MC_TASKS_PER_TISSUE]
@@ -111,6 +110,13 @@ def remake(project, task_id, tissue=None):
     source_dir = OUTPUT_DIR.split("output_pg")[0] + "output_copies/output_pg04-20-21/" + results_dir.split(OUTPUT_DIR)[
         1]
     adata = pd.read_csv(source_dir + "!cells.csv")
+    if annotations != 'Unknown' and annotations != "Absolute" and os.path.isfile(DATA_DIR + annotations):
+        ann_df = pd.read_csv(DATA_DIR + annotations)
+        annotations_cell_type = ann_df["annotations"]
+        annotations_cell_type.index = ann_df["barcodekey"]
+        annotations_cell_type = annotations_cell_type.reindex(adata.obs.index)
+        annotations_cell_type = annotations_cell_type.fillna("Unknown")
+        adata["annotations"] = annotations_cell_type
     markers = pd.read_csv(source_dir + "!markers.csv")
     markers.index = markers.feature
     if not any(markers.t_qval < 0.05):
@@ -144,9 +150,10 @@ log = open("log.txt", "w+")
 for i, row in get_project_info().iterrows():
     proj = row["project"]
     tiss = row["tissue"]
+    ann = row["annotations"]
 
     for method in range(4):
         try:
-            remake(proj, method, tiss)
+            remake(proj, method, tiss, ann)
         except Exception as e:
             print("FAILED {} {} method {}:\n{}".format(proj, tiss, method, traceback.format_exc()), file=log)
