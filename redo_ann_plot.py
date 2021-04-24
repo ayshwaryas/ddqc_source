@@ -110,11 +110,12 @@ def remake(project, task_id, tissue, annotations):
     source_dir = OUTPUT_DIR.split("output_pg")[0] + "output_copies/output_pg04-20-21/" + results_dir.split(OUTPUT_DIR)[
         1]
     adata = pd.read_csv(source_dir + "!cells.csv")
+    adata.index = adata.barcodekey
     if annotations != 'Unknown' and annotations != "Absolute" and os.path.isfile(DATA_DIR + annotations):
         ann_df = pd.read_csv(DATA_DIR + annotations)
         annotations_cell_type = ann_df["annotations"]
         annotations_cell_type.index = ann_df["barcodekey"]
-        annotations_cell_type = annotations_cell_type.reindex(adata.obs.index)
+        annotations_cell_type = annotations_cell_type.reindex(adata.index)
         annotations_cell_type = annotations_cell_type.fillna("Unknown")
         adata["annotations"] = annotations_cell_type
     markers = pd.read_csv(source_dir + "!markers.csv")
@@ -147,10 +148,13 @@ def remake(project, task_id, tissue, annotations):
 log = open("log.txt", "w+")
 
 
-for i, row in get_project_info().iterrows():
+for i, row in get_project_info(project="human_other").iterrows():
     proj = row["project"]
     tiss = row["tissue"]
     ann = row["annotations"]
+
+    if tiss != "adipose" and tiss != "krasnow_lung":
+        continue
 
     for method in range(4):
         try:
