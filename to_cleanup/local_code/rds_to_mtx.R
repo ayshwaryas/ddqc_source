@@ -6,13 +6,13 @@ first <- function(x) {
 }
 
 
-data.dir <- "~/Documents/primes_storage/data/PanglaoDB/"
+data.dir <- "~/Downloads/"
 features.filter <- 0 
 cells.filter <- 0
-for (tissue in c("Pancreatic_Islets", "Prostate", "Testis")) {
-  is.human <<- TRUE
+for (tissue in c("bipolar_mouse", "retina_mouse")) {
+  is.human <<- FALSE
   data.path <<- paste0(data.dir, tissue, "/")
-  files <- list.files(path=data.path, pattern="SRA")
+  files <- list.files(path=data.path, pattern="")
   tiss <- NULL
   if (length(files) > 1) {
     objs <- NULL
@@ -28,12 +28,13 @@ for (tissue in c("Pancreatic_Islets", "Prostate", "Testis")) {
     tiss <- merge(x = objs[[1]], y = objs[2:length(objs)], add.cell.ids = filenames, project = tissue)
   } else {
     file <- files[1]
-    load(paste0(data.path, file))
-    gene.names <- rownames(sm)
-    gene.names <- sapply(strsplit(gene.names, "_ENSG"), first)
-    rownames(sm) <- gene.names
-    tiss <- CreateSeuratObject(counts = sm, project = (strsplit(file, "-")[[1]][[2]]), min.cells = cells.filter, min.features = features.filter)
-    tiss <- RenameCells(tiss, add.cell.id = (strsplit(file, "-")[[1]][[2]]))
+    #load(paste0(data.path, file))
+    tiss <- readRDS(paste0(data.path, file))
+    ti#gene.names <- rownames(sm)
+    #gene.names <- sapply(strsplit(gene.names, "_ENSG"), first)
+    #rownames(sm) <- gene.names
+    #tiss <- CreateSeuratObject(counts = sm, project = (strsplit(file, "-")[[1]][[2]]), min.cells = cells.filter, min.features = features.filter)
+    #tiss <- RenameCells(tiss, add.cell.id = (strsplit(file, "-")[[1]][[2]]))
   }
   
   tiss$annotations <- "Unknown"

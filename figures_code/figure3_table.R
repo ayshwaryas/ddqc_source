@@ -1,5 +1,8 @@
-results.dir <- "/ahg/regevdata/projects/scqc/output_pg/"
-fout <- "figure3_table.csv"
+source("figures_code/config.R")
+
+
+results.dir <- OUTPUT.DIR
+fout <- paste0(PATH, "figure3_table.csv")
 
 
 HEADER <- "Directory,Tissue,n_cells after basic QC,n_cells after ddqc,pct,n_cells after cutoff,pct,n_cells retained by both methods,pct,pct joint,n_cells retained only by ddqc,pct,pct joint,n_cells retained only by cutoff,pct,pct joint,n_cells that failed ddqc,pct,n_cells that failed ddqc due to n_counts,pct,n_cells that failed ddqc due to n_genes,pct,n_cells that failed ddqc due to percent.mito,pct,n_cells that failed ddqc due to n_genes and percent_mito,pct,n_cells that failed ddqc and were retained by cutoff,pct,n_cells that failed ddqc due to n_counts and were retained by cutoff,pct,n_cells that failed ddqc due to n_genes and were retained by cutoff,pct,n_cells that failed ddqc due to percent.mito and were retained by cutoff,pct,n_cells that failed ddqc due to n_genes and percent_mito and were retained by cutoff,pct"

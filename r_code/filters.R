@@ -2,7 +2,7 @@ library(Seurat)
 library(ggplot2)
 
 
-clusterData <- function(data, norm.factor=10000, n.pieces=50, res=1, random.seed=29) {
+.clusterData <- function(data, norm.factor=10000, n.pieces=50, res=1, random.seed=29) {
   set.seed(random.seed)
   data <- NormalizeData(data, normalization.method = "LogNormalize", scale.factor = norm.factor)
   data <- FindVariableFeatures(data, selection.method = "vst", nfeatures = 2000)
@@ -15,7 +15,7 @@ clusterData <- function(data, norm.factor=10000, n.pieces=50, res=1, random.seed
 }
 
 
-metricFilter <- function(data, df.qc, param=2, metric.name, do.upper.co=FALSE, do.lower.co=FALSE,
+.metricFilter <- function(data, df.qc, param=2, metric.name, do.upper.co=FALSE, do.lower.co=FALSE,
                          lower.bound=10E10, upper.bound=-10E10) {
   passed.qc <- vector(mode="logical", length=length(colnames(data)))
   names(passed.qc) <- colnames(data)
@@ -54,7 +54,7 @@ metricFilter <- function(data, df.qc, param=2, metric.name, do.upper.co=FALSE, d
 }
 
 
-ddqcBoxplot <- function(df.qc, metric.name, h.line.x=0, do.log=False) {
+.ddqcBoxplot <- function(df.qc, metric.name, h.line.x=0, do.log=False) {
   plt.data <- data.frame(metric=df.qc[[metric.name]], clusters=df.qc$cluster_labels)
   colnames(plt.data) <- c("metric", "clusters") 
   
@@ -76,7 +76,7 @@ ddqcBoxplot <- function(df.qc, metric.name, h.line.x=0, do.log=False) {
 }
 
 
-initialQC <- function(data, basic.n.genes, basic.percent.mt, mt.prefix="MT-", rb.prefix="^RP[SL][[:digit:]]|^RPLP[[:digit:]]|^RPSA") {
+initialQC <- function(data, basic.n.genes=100, basic.percent.mt=80, mt.prefix="MT-", rb.prefix="^RP[SL][[:digit:]]|^RPLP[[:digit:]]|^RPSA") {
   data[["percent.mt"]] <- PercentageFeatureSet(data, features=grep(mt.prefix, rownames(data$RNA), ignore.case=TRUE))
   data[["percent.rb"]] <- PercentageFeatureSet(data, features=grep(rb.prefix, rownames(data$RNA), ignore.case=TRUE))
   
@@ -89,34 +89,34 @@ ddqc.metrics <- function(data, res=1, threshold=2,
              mito.prefix="MT-", ribo.prefix="^RP[SL][[:digit:]]|^RPLP[[:digit:]]|^RPSA", 
              do.counts=TRUE, do.genes=TRUE, do.mito=TRUE, do.ribo=FALSE, n.genes.lower.bound=200, 
              percent.mito.upper.bound=10, random.state=29) {
-  data <- clusterData(data, res=res, random.seed = random.state)
+  data <- .clusterData(data, res=res, random.seed = random.state)
   
   df.qc <- data.frame("cluster_labels"=data$seurat_clusters, row.names=colnames(data))
   passed.qc <- vector(mode="logical", length=length(data$seurat_clusters))
   passed.qc <- TRUE
   
   if (do.counts) {
-    df.qc <- metricFilter(data, df.qc, threshold, "nCount_RNA", do.lower.co=TRUE)
+    df.qc <- .metricFilter(data, df.qc, threshold, "nCount_RNA", do.lower.co=TRUE)
     passed.qc <- passed.qc & df.qc$nCount_RNA.passed.qc
   }
   if (do.genes) {
-    df.qc <- metricFilter(data, df.qc, threshold, "nFeature_RNA", do.lower.co=TRUE,
+    df.qc <- .metricFilter(data, df.qc, threshold, "nFeature_RNA", do.lower.co=TRUE,
                                                      lower.bound=n.genes.lower.bound)
     passed.qc <- passed.qc & df.qc$nFeature_RNA.passed.qc
   }
   if (do.mito) {
-    df.qc <- metricFilter(data, df.qc, threshold, "percent.mt", do.upper.co=TRUE,
+    df.qc <- .metricFilter(data, df.qc, threshold, "percent.mt", do.upper.co=TRUE,
                                                      upper.bound=percent.mito.upper.bound)
     passed.qc <- passed.qc & df.qc$percent.mt.passed.qc
   }
   if (do.ribo) {
-    df.qc <- metricFilter(data, df.qc, threshold, "percent.rb", do.upper.co=TRUE)
+    df.qc <- .metricFilter(data, df.qc, threshold, "percent.rb", do.upper.co=TRUE)
     passed.qc <- passed.qc & df.qc$percent.rb.passed.qc
   }
   df.qc[["passed.qc"]] <- passed.qc
   
-  ddqcBoxplot(df.qc, "nFeature_RNA", log2(200), TRUE)
-  ddqcBoxplot(df.qc, "percent.mt", 10, FALSE)
+  .ddqcBoxplot(df.qc, "nFeature_RNA", log2(200), TRUE)
+  .ddqcBoxplot(df.qc, "percent.mt", 10, FALSE)
   
   return(df.qc)
 }

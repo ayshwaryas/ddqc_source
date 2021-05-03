@@ -47,7 +47,26 @@ makeScatterPlots <- function(cells, clusters) {
   }
 }
 
-tissues <- c()
+tissues <- c("human_other/Adipose",
+             "human_other/Kidney2",
+             "human_other/Liver",
+             "human_other/Krasnow_Lung",
+             "PanglaoDB/Bone_Marrow",
+             "PanglaoDB/Mammary_Gland",
+             "PanglaoDB/Pancreatic_Islets",
+             "PanglaoDB/Substantia_Nigra",
+             "PanglaoDB/Testis",
+             "tabula_muris_smartseq2/Bone_Marrow",
+             "tabula_muris_smartseq2/Cerebellum",
+             "tabula_muris_smartseq2/Colon",
+             "tabula_muris_smartseq2/Heart_and_Aorta",
+             "tabula_muris/Bladder",
+             "tabula_muris/Heart_and_Aorta",
+             "tabula_muris/Lung",
+             "tabula_muris/Mammary_Gland",
+             "tabula_muris/Tongue",
+             "tabula_muris/Trachea",
+             "human_other/Heart_Circulation")
 
 for (tissue in tissues) {
   for (method in c("1.4-none-0", "1.4-mad-2")) {
