@@ -40,13 +40,13 @@ for (project in dir(results.dir, recursive=FALSE)) {
         if (summary(cluster.cells$n_genes)[[4]] <= n_genes_lower_bound) {
           write(info, file=fout_ng_lower_75q, append = TRUE)
         }
-        if (summary(cluster.cells$n_genes)[[5]] >= n_genes_upper_bound) {
+        if (summary(cluster.cells$n_genes)[[5]] >= n_genes_lower_bound) {
           write(info, file=fout_ng_lower_max, append = TRUE)
         }
         if (summary(cluster.cells$percent_mito)[[2]] >= mito_upper_bound) {
           write(info, file=fout_mito_upper_25q, append = TRUE)
         }
-        if (summary(cluster.cells$percent_mito)[[1]]>= ribo_upper_bound) {
+        if (summary(cluster.cells$percent_mito)[[1]]>= mito_upper_bound) {
           write(info, file=fout_mito_upper_min, append = TRUE)
         }
       }
