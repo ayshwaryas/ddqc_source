@@ -7,5 +7,6 @@ from config.config import MC_TASKS_PER_TISSUE
 project = "tabula_muris"
 method = 2
 for tissue in ("Heart_and_Aorta", "Lung"):
-    for param in (1.5, 2.5):
-        mc_main(project, task_id=method, tissue=tissue, param=param)
+    # for param in (1.5, 2.5):
+    #     mc_main(project, task_id=method, tissue=tissue, param=param)
+    joint_main(project, 0, tissue=tissue, c_mad=True)

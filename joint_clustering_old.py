@@ -11,9 +11,13 @@ from utils import safe_mkdir, cluster_data, add_cd_scores, marker_dict_to_df, as
 
 
 # function that creates all the relevant directories
-def create_joint_dir(project, tissue, res):
+def create_joint_dir(project, tissue, res, c_mad=False):
     # directory with unfiltered clustering
-    task_directory = "{}-joint_clustering_old".format(res)  # name of the directory for this task
+    if not c_mad:
+        task_directory = "{}-joint_clustering_old".format(res)  # name of the directory for this task
+    else:
+        task_directory = "{}-joint_clustering_mad".format(res)  # name of the directory for this task
+
     task_name = tissue + "-" + task_directory  # task name to put on plots
     results_dir = OUTPUT_DIR + project + "/" + tissue + "/" + task_directory + "/"  # directory for saving output
 
@@ -38,7 +42,28 @@ def assign_colors(adata, project, tissue, res):
     return adata
 
 
-def joint_main(project, task_id, tissue=None):
+def assign_colors_mad(adata, project, tissue, res):
+    mad15_cells = pd.read_csv(OUTPUT_DIR + project + "/" + tissue + "/" + str(res) + "-mad-1.5/!cells.csv")
+    mad2_cells = pd.read_csv(OUTPUT_DIR + project + "/" + tissue + "/" + str(res) + "-mad-2/!cells.csv")
+    mad25_cells = pd.read_csv(OUTPUT_DIR + project + "/" + tissue + "/" + str(res) + "-mad-2.5/!cells.csv")
+    adata.obs["color"] = "Neither"
+
+    adata.obs.loc[mad15_cells["barcodekey"], "color"] = "MAD1.5 only"
+    adata.obs.loc[mad2_cells["barcodekey"], "color"] = "MAD2 only"
+    adata.obs.loc[mad25_cells["barcodekey"], "color"] = "MAD2.5 only"
+
+    adata.obs.loc[list(set(mad15_cells["barcodekey"]).intersection(set(mad2_cells["barcodekey"]))), "color"] = "MAD1.5 and MAD2"
+    adata.obs.loc[list(set(mad15_cells["barcodekey"]).intersection(set(mad25_cells["barcodekey"]))), "color"] = "MAD1.5 and MAD2.5"
+    adata.obs.loc[list(set(mad2_cells["barcodekey"]).intersection(set(mad25_cells["barcodekey"]))), "color"] = "MAD2 and MAD2.5"
+
+    adata.obs.loc[list(set(mad15_cells["barcodekey"]).intersection(set(mad2_cells["barcodekey"])).intersection(set(mad25_cells["barcodekey"]))), "color"] = "All"
+
+    adata.obs["passed_qc"] = (adata.obs.color != "Neither")
+    pg.filter_data(adata)
+    return adata
+
+
+def joint_main(project, task_id, tissue=None, c_mad=False):
     if tissue is None:
         tissue, is_human, annotations = get_project_info(project, task_id=task_id)
     else:
@@ -48,8 +73,11 @@ def joint_main(project, task_id, tissue=None):
 
     adata = read_tissue(project, tissue, annotations)
 
-    task_directory, task_name, results_dir = create_joint_dir(project, tissue, resolution)
-    assign_colors(adata, project, tissue, resolution)
+    task_directory, task_name, results_dir = create_joint_dir(project, tissue, resolution, c_mad=c_mad)
+    if not c_mad:
+        assign_colors(adata, project, tissue, resolution)
+    else:
+        assign_colors_mad(adata, project, tissue, resolution)
 
     # filtering
     mito_prefix = MITO_PREFIXES["human"] if is_human else MITO_PREFIXES["mouse"]
