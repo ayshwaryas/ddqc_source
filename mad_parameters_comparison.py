@@ -8,4 +8,4 @@ project = "tabula_muris"
 tissues = ["Heart_and_Aorta", "Lung"]
 method = 2
 for tissue in tissues:
-    mc_main(project, task_id=method, tissue=tissue, method=method)
+    mc_main(project, task_id=method, tissue=tissue, param=method)
