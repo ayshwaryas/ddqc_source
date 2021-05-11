@@ -23,7 +23,7 @@ def create_dirs(project, tissue, res, method, param):
     return task_directory, task_name, results_dir
 
 
-def mc_main(project, task_id, tissue=None):
+def mc_main(project, task_id, tissue=None, param=None):
     if tissue is None:
         tissue, is_human, annotations = get_project_info(project, task_id=task_id // MC_TASKS_PER_TISSUE)
     else:
@@ -31,7 +31,10 @@ def mc_main(project, task_id, tissue=None):
 
     adata = read_tissue(project, tissue, annotations)
 
-    method, param = MC_METHODS[task_id % MC_TASKS_PER_TISSUE]
+    if param is None:
+        method, param = MC_METHODS[task_id % MC_TASKS_PER_TISSUE]
+    else:
+        method = MC_METHODS[task_id % MC_TASKS_PER_TISSUE][0]
     print("Method comparison task_id:{} - tissue:{}, res:{}, method:{}, param:{}, project:{}".format(task_id, tissue,
                                                                                                      resolution, method,
                                                                                                      param, project))
