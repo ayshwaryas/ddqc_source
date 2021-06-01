@@ -129,6 +129,7 @@ generatePlotsByMetric <- function(obj, lbls, metric.name.pg, metric.name, name.s
 
 generateFCPlots <- function(obj, lbls) {
   plot.cols <- c("Cutoff only" = "#DB6400", "MAD2 only" = "#16697A","All" = "#FFA62B" , "Neither" = "#99A8B2") #to keep consistent plot colors
+  plot.cols.mad <- c("MAD2 and MAD2.5" = "#DB6400", "MAD2.5 only" = "#16697A","All" = "#FFA62B" , "Neither" = "#99A8B2")
   data <- data.frame(UMAP1 = obj$umap1, UMAP2 = obj$umap2, cluster = obj$louvain_labels, color=obj$color, annotation=obj$annotations)
   
   
