@@ -1,5 +1,5 @@
 genes_orig = open("genes_orig.tsv", "r")
-genes_decorated = open("genes_dec_mgi.tsv", "r")
+genes_decorated = open("genes_dec.tsv", "r")
 
 genes_dict = dict()
 for line in genes_decorated.readlines():
