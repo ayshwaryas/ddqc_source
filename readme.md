@@ -7,7 +7,7 @@
   - config - constants and paths. More on that in running instructions
 - figures_code/ - code used to create figures for the paper
   - annotation_comparison.R - finds difference between PanglaoDB annotations and author provided annotations and calculates accuracy.
-  - config.R - imports and paths. More on that in running instructions
+  - config.R - imports and paths
   - count_cells.R - counts total human and mouse cells
   - ddqc_vs_paper.R - compares ddqc results vs. paper results in TM
   - examples_search_new_joint_pg.R - searches for unique clusters (compared to standard cutoff)
@@ -83,3 +83,45 @@ In addition to all of those files 1.4-joint_clustering_old will have the followi
 - !p_filterplot.pdf - UMAP colored based on which cells passed which qc method
 
 ### Running instructions
+#### Requirements
+Python requirements:
+- numpy>1.20
+- matplotlib>=3.4.0
+- pandas>=1.2.0
+- pegasusio
+- pegasuspy>=1.3
+- seaborn>=0.11
+
+R requirements:
+- ggplot
+- Seurat
+- dplyr
+
+#### Configuration
+First, in config/ create a file named local_config.py, with the following code:
+`local = True`
+Then adjust config files as needed:
+
+##### config/config.py:
+- Paths under `if not local:`:
+  - DATA_DIR - path to the directory with raw files
+  - OUTPUT_DIR - path to the output directory
+- resolution - clustering resolution
+- do_batch_correction - whether to do batch correction
+- basic_genes_filter - basic nGenes filter (performed for all methods)
+- basic_mito_filter - same, but for mito
+- MITO_PREFIXES, RIBO_PREFIXES - mito and ribo prefixes for human and mouse
+- do_%metric_name% - whether to do ddqc on a given metrics
+- do not modify parameters under METHOD COMPARISON SCRIPTS
+
+##### Reading the unfiltered tissue files and adding metadata from the output_pg folder
+TBD
+
+#### Running main pipeline:
+##### method_comparison.py:
+Launch the script. It will prompt you to enter project. Then enter -1 to enter tissue name afterwards. After that enter method ID (you can find all methods in order in the config file)
+You can also run it by calling mc_main function and providing the arguments to the function
+
+##### joint_clustering_old.py:
+Same as above, except cutoff and mad methods for the given tissue need to be run prior to running this script.
+
