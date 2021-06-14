@@ -1,0 +1,17 @@
+name,file,do_human,do_mouse
+apoptosis1,apoptosis1.csv,True,True
+apoptosis2,apoptosis2.csv,True,True
+apoptosis3,apoptosis3.csv,True,True
+cycling_g,cycling_g.csv,True,True
+cycling_s,cycling_s.csv,True,True
+dissociation,dissociation.csv,True,True
+er_stress,er_stress.csv,True,True
+go_mito_resp_chain_human,go_mito_resp_chain_human.csv,True,False
+go_mito_resp_chain_mouse,go_mito_resp_chain_mouse.csv,False,True
+pd_apoptosis_human,pd_apoptosis_human,True,False
+pg_cell_cycle_human,cell_cycle_human,True,False
+pg_mitochondrial_genes_human,mitochondrial_genes_human,True,False
+pg_ribosomal_genes_human,ribosomal_genes_human,True,False
+pd_apoptosis_mouse,pd_apoptosis_mouse,False,True
+pg_cell_cycle_mouse,cell_cycle_mouse,False,True
+pg_ribosomal_genes_mouse,ribosomal_genes_mouse,False,True

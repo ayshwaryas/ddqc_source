@@ -19,6 +19,7 @@
   - tm_lung_heatmaps.ipynb - score violins and heatmaps for TM lung
   - trends_percentile_search.R, trends_search.R - trends tables
 - misc/
+  - signatures/ signature genes CSVs
   - cluster_plots.ipynb, cluster_plots-joint.ipynb, dotplots_generator.ipynb, dotplots_generator-joint.ipynb - annotation plots (dotplots and umaps on common genes and markers)
   - convert_gene_names.py - conversion of genes.tsv from ENSG gene codes to gene names (was used for EBI)
   - genes_dec.tsv - matches gene names with ENSG codes
@@ -27,6 +28,7 @@
   - gene_search.py - tool that takes marker genes from !clusters.csv and finds their mentions in ct_markers.csv and prints possible cell types
   - rds_to_mtx.R - converts RDS object to mtx matrix format
   - top_de_check.py - checks top DE genes for specific tissue and determines whether they are low percent or high percent (was used for annotation)
+- R_code/ - old implementation of pipeline in R and Seurat. Probably does not work properly.
 - Main pipeline files:
   - filtering.py - pipeline implementation of ddqc and standard cutoff, and filtering statistics recording
   - joint_clustering_old.py - joint clustering of cutoff and ddqc results
