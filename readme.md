@@ -99,7 +99,7 @@ R requirements:
 
 #### Configuration
 First, in config/ create a file named local_config.py, with the following code:
-`local = True`
+`local = False`
 Then adjust config files as needed:
 
 ##### config/config.py:
@@ -114,8 +114,8 @@ Then adjust config files as needed:
 - do_%metric_name% - whether to do ddqc on a given metrics
 - do not modify parameters under METHOD COMPARISON SCRIPTS
 
-##### Reading the unfiltered tissue files and adding metadata from the output_pg folder
-TBD
+##### Reading the tissue files and adding metadata from the output_pg folder 
+Refer to `reading_data_tutorial.ipynb`.
 
 #### Running main pipeline:
 ##### method_comparison.py:
