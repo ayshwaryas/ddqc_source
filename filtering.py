@@ -32,6 +32,7 @@ def calculate_percent_ribo(adata, ribo_prefix):
 
 # basic qc that is performed for each method
 def initial_qc(adata, n_genes, percent_mito, mito_prefix, ribo_prefix):
+    print(n_genes)
     pg.qc_metrics(adata, mito_prefix=mito_prefix, min_umis=-INF, max_umis=INF, min_genes=n_genes, max_genes=INF,
                   percent_mito=percent_mito)  # default PG filtering with custom cutoffs
     adata = calculate_percent_ribo(adata, ribo_prefix)  # calculate percent ribo
@@ -52,10 +53,10 @@ def metric_filter(adata, method, param, metric_name, do_lower_co=False, do_upper
     adata.obs[metric_name + "_qc_pass"] = False  # T/F array to tell whether the cell is filtered
     adata.obs[metric_name + "_lower_co"] = None  # array recording lower cutoff for cell (if exists)
     adata.obs[metric_name + "_upper_co"] = None  # array recording upper cutoff for cell (if exists)
-    for cl in range(1, max(list(map(int, adata.obs.louvain_labels.cat.categories))) + 1):  # iterate though all clusters
+    for cl in range(1, max(list(map(int, adata.obs.cluster_labels.cat.categories))) + 1):  # iterate though all clusters
         lower_co = -INF
         upper_co = INF
-        cluster = adata[adata.obs.louvain_labels == str(cl)]  # subset adata based on cluster number
+        cluster = adata[adata.obs.cluster_labels == str(cl)]  # subset adata based on cluster number
 
         if method == "mad":  # calculate MAD cutoffs, which are median ± param * MAD
             if do_lower_co:
@@ -82,14 +83,14 @@ def metric_filter(adata, method, param, metric_name, do_lower_co=False, do_upper
                 upper_co = 10.0
 
         filters = [
-            adata.obs.louvain_labels == str(cl),
+            adata.obs.cluster_labels == str(cl),
             adata.obs[metric_name] >= lower_co,
             adata.obs[metric_name] <= upper_co
         ]  # filtering condition
         if do_upper_co:
-            adata.obs.loc[adata.obs.louvain_labels == str(cl), metric_name + "_upper_co"] = upper_co
+            adata.obs.loc[adata.obs.cluster_labels == str(cl), metric_name + "_upper_co"] = upper_co
         if do_lower_co:
-            adata.obs.loc[adata.obs.louvain_labels == str(cl), metric_name + "_lower_co"] = lower_co
+            adata.obs.loc[adata.obs.cluster_labels == str(cl), metric_name + "_lower_co"] = lower_co
         # for cells that satisfy the condition set the value to true
         adata.obs.loc[np.logical_and.reduce(filters), metric_name + "_qc_pass"] = True
 
@@ -107,7 +108,7 @@ def metric_filter(adata, method, param, metric_name, do_lower_co=False, do_upper
 # record_path - path for recording filtered cells CSVs (keep it None if not needed)
 def filter_cells(adata, res, method, threshold, basic_n_genes=100, basic_percent_mito=80, mito_prefix="MT-",
                  ribo_prefix="^Rp[sl]\d", do_counts=True, do_genes=True, do_mito=True, do_ribo=False, record_path=None,
-                 n_genes_lower_bound=200, percent_mito_upper_bound=10):
+                 n_genes_lower_bound=200, percent_mito_upper_bound=10, clustering_method="louvain"):
     adata = initial_qc(adata, basic_n_genes, basic_percent_mito, mito_prefix,
                        ribo_prefix)  # perform initial qc
 
@@ -116,7 +117,7 @@ def filter_cells(adata, res, method, threshold, basic_n_genes=100, basic_percent
         return adata
 
     adata_copy = adata.copy()  # make a copy of adata, so the clustering results won't affect future downstream analysis
-    adata_copy = cluster_data(adata_copy, res)  # do initial clustering of adata
+    adata_copy = cluster_data(adata_copy, res, clustering_method=clustering_method)  # do initial clustering of adata
 
     # for each metric if do_metric is true, the filtering will be performed
     if do_counts:

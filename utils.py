@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import pegasus as pg
 
-from config.config import DATA_DIR, do_batch_correction
+from config.config import DATA_DIR
 
 
 # check if the dir exists, if not - create it
@@ -52,25 +52,33 @@ def marker_dict_to_df(marker_dict, min_log_fc=0.25, min_pct=25, max_qval=0.05):
 
 
 # function that performs clustering; does dimensional reductions and finds DE genes if specified
-def cluster_data(adata, resolution, compute_markers=False, compute_reductions=False):
+def cluster_data(adata, resolution, compute_markers=False, compute_reductions=False, clustering_method="louvain"):
+    print(clustering_method)
     pg.log_norm(adata)
-    if do_batch_correction:
-        pg.highly_variable_features(adata, consider_batch=True)
-        pg.pca(adata, random_state=29)
-        pca_key = pg.run_harmony(adata, random_state=29)
-        pg.neighbors(adata, K=20, rep=pca_key, random_state=29)
-        pg.louvain(adata, resolution=resolution, rep=pca_key, random_state=29)
-    else:
-        pg.highly_variable_features(adata, consider_batch=False)
-        pg.pca(adata, random_state=29)
-        pg.neighbors(adata, K=20, random_state=29)
+    pg.highly_variable_features(adata, consider_batch=False)
+    pg.pca(adata, random_state=29)
+    pg.neighbors(adata, K=20, random_state=29)
+
+    if clustering_method == "louvain":
         pg.louvain(adata, resolution=resolution, random_state=29)
+        adata.obs["cluster_labels"] = adata.obs.louvain_labels
+    elif clustering_method == "leiden":
+        pg.leiden(adata, resolution=resolution, random_state=29)
+        adata.obs["cluster_labels"] = adata.obs.leiden_labels
+    elif clustering_method == "spectral_louvain":
+        pg.spectral_louvain(adata, resolution=resolution, random_state=29)
+        adata.obs["cluster_labels"] = adata.obs.spectral_louvain_labels
+    elif clustering_method == "spectral_leiden":
+        pg.spectral_leiden(adata, resolution=resolution, random_state=29)
+        adata.obs["cluster_labels"] = adata.obs.spectral_leiden_labels
+    else:
+        raise KeyError(f"Unknown clustering method {clustering_method}")
 
     if compute_reductions:
         pg.umap(adata, random_state=29)
 
     if compute_markers:
-        pg.de_analysis(adata, cluster='louvain_labels', t=True, fisher=False, temp_folder="/tmp")
+        pg.de_analysis(adata, cluster='cluster_labels', t=True, fisher=False, temp_folder="/tmp")
         marker_dict = pg.markers(adata, alpha=1)
         return adata, marker_dict
     else:
@@ -134,8 +142,8 @@ def assign_cell_types(adata, markers, tissue, min_sg=3):
     for c in colnames:
         clusters_dict[c] = []
 
-    for cl in range(1, max(list(map(int, adata.obs.louvain_labels.cat.categories))) + 1):  # iterate though all clusters
-        cluster = adata[adata.obs.louvain_labels == str(cl)]  # subset adata based on cluster number
+    for cl in range(1, max(list(map(int, adata.obs.cluster_labels.cat.categories))) + 1):  # iterate though all clusters
+        cluster = adata[adata.obs.cluster_labels == str(cl)]  # subset adata based on cluster number
         cluster_markers = markers[markers.cluster == str(cl)]  # subset markers for current cluster
 
         possible_cell_types = dict()  # dict with possible cell types and scores (sum of Log2FC for each marker)

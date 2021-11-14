@@ -44,7 +44,7 @@ DimPlotContinuous <- function(obj, metric.name.pg, metric.name, lbls, log2=FALSE
   cols <- scale_colour_gradientn(colours=rev(c("#9E0142", "#D53E4F", "#F46D43", "#FDAE61", "#FEE08B", 
                                                "#FFFFBF", "#E6F598", "#ABDDA4", "#66C2A5", "#3288BD", 
                                                "#5E4FA2")))
-  data <- data.frame(UMAP1 = obj$umap1, UMAP2 = obj$umap2, color = obj[[metric.name.pg]], cluster = obj$louvain_labels)
+  data <- data.frame(UMAP1 = obj$umap1, UMAP2 = obj$umap2, color = obj[[metric.name.pg]], cluster = obj$cluster_labels)
   if (log2) {
     plot <- ggplot(data, aes(x=UMAP1, y=UMAP2, color=log(color), fill=cluster)) + geom_point(size = 1) + theme_umap + ttl + cols + scale_fill_discrete(labels = lbls)
     plot <- plot + labs(color=paste0("log2(", metric.name, ")")) 
@@ -52,7 +52,7 @@ DimPlotContinuous <- function(obj, metric.name.pg, metric.name, lbls, log2=FALSE
     plot <- ggplot(data, aes(x=UMAP1, y=UMAP2, color=color, fill=cluster)) + geom_point(size = 1) + theme_umap + ttl + cols + scale_fill_discrete(labels = lbls)
     plot <- plot + labs(color=metric.name)
   }
-  for (cl in levels(obj$louvain_labels)) { #add cluster labels
+  for (cl in levels(obj$cluster_labels)) { #add cluster labels
     cluster.data <- subset(data, cluster == cl)
     plot <- plot + annotate("text", x = mean(cluster.data$UMAP1), y = mean(cluster.data$UMAP2), label=cl, size = 7, fontface=2)
   }
@@ -60,9 +60,9 @@ DimPlotContinuous <- function(obj, metric.name.pg, metric.name, lbls, log2=FALSE
 }
 
 DimPlotCluster <- function(obj, lbls) { #DimPlot colored by cluster
-  data <- data.frame(UMAP1 = obj$umap1, UMAP2 = obj$umap2, cluster = obj$louvain_labels)
+  data <- data.frame(UMAP1 = obj$umap1, UMAP2 = obj$umap2, cluster = obj$cluster_labels)
   plot <- ggplot(data, aes(x=UMAP1, y=UMAP2, color=cluster, fill=cluster)) + geom_point(size = 1) + theme_umap + ttl + scale_fill_discrete(labels = lbls)
-  for (cl in levels(obj$louvain_labels)) { #add cluster labels
+  for (cl in levels(obj$cluster_labels)) { #add cluster labels
     cluster.data <- subset(data, cluster == cl)
     plot <- plot + annotate("text", x = mean(cluster.data$UMAP1), y = mean(cluster.data$UMAP2), label=cl, size = 7, fontface=2)
   }
@@ -92,8 +92,8 @@ generatePlotsByMetric <- function(obj, lbls, metric.name.pg, metric.name, name.s
     axis_breaks_horizontal <- NULL
   }
   
-  n.clusters <- length(levels(obj$louvain_labels))
-  data <- data.frame(metric=obj[[metric.name.pg]], clusters=obj$louvain_labels) 
+  n.clusters <- length(levels(obj$cluster_labels))
+  data <- data.frame(metric=obj[[metric.name.pg]], clusters=obj$cluster_labels) 
   colnames(data) <- c("metric", "clusters") #rename data columns
   
   if (metric.name.pg == "n_counts" || metric.name.pg == "n_genes") {
@@ -130,14 +130,14 @@ generatePlotsByMetric <- function(obj, lbls, metric.name.pg, metric.name, name.s
 generateFCPlots <- function(obj, lbls) {
   plot.cols <- c("Cutoff only" = "#DB6400", "MAD2 only" = "#16697A","All" = "#FFA62B" , "Neither" = "#99A8B2") #to keep consistent plot colors
   plot.cols.mad <- c("MAD2 and MAD2.5" = "#DB6400", "MAD2.5 only" = "#16697A","All" = "#FFA62B" , "Neither" = "#99A8B2")
-  data <- data.frame(UMAP1 = obj$umap1, UMAP2 = obj$umap2, cluster = obj$louvain_labels, color=obj$color, annotation=obj$annotations)
+  data <- data.frame(UMAP1 = obj$umap1, UMAP2 = obj$umap2, cluster = obj$cluster_labels, color=obj$color, annotation=obj$annotations)
   
   
   fltplot <- ggplot(data, aes(x=UMAP1, y=UMAP2, color=color, fill=cluster)) + geom_point(size = 1) + 
     theme_umap + guides(colour = guide_legend(override.aes = list(size=2))) + 
     scale_fill_discrete(labels = lbls) + scale_color_manual(values = plot.cols) + ttl
    
-  for (cl in levels(obj$louvain_labels)) { #add cluster labels
+  for (cl in levels(obj$cluster_labels)) { #add cluster labels
     cluster.data <- subset(data, cluster == cl)
     fltplot <- fltplot + annotate("text", x = mean(cluster.data$UMAP1), y = mean(cluster.data$UMAP2), label=cl, size = 7, fontface=2)
   }
@@ -159,7 +159,7 @@ generateFCPlots <- function(obj, lbls) {
   freqplot <- ggplot(data1, aes(x=cluster, y=freq, fill=color)) + geom_bar(stat="identity") + theme_horizontal_with_legend + ttl + scale_fill_manual(values = plot.cols) + scale_x_discrete(labels=lbls)
   
   #write plots
-  n.clusters <- length(levels(obj$louvain_labels))
+  n.clusters <- length(levels(obj$cluster_labels))
   ggsave1(filename = paste0(results.dir, "!p_filterplot.pdf"), plot=fltplot, n.clusters = n.clusters, type = "u")
   ggsave1(filename = paste0(results.dir, "!p_barplot.pdf"), plot=freqplot, n.clusters=n.clusters, type = "h")
   
@@ -187,7 +187,7 @@ generatePlots <- function(obj, cell.types, joint=FALSE, no.ct.labels=FALSE) { #m
   generatePlotsByMetric(obj, lbls, "percent_ribo", "percent_ribo", "ribo") #%ribo plots
   
   #cluster colored dimplots
-  ggsave1(filename=paste0(results.dir, "umap_clusters.pdf"), plot=DimPlotCluster(obj, lbls), n.clusters = length(levels(obj$louvain_labels)), type = "u")
+  ggsave1(filename=paste0(results.dir, "umap_clusters.pdf"), plot=DimPlotCluster(obj, lbls), n.clusters = length(levels(obj$cluster_labels)), type = "u")
   
   if (joint) { # make joint clustering plots
     generateFCPlots(obj, lbls)
@@ -202,7 +202,7 @@ if (!is.na(task.name)) {
   message("Starting R script to generate plots")
   
   tiss <- read.csv(paste0(results.dir, "!cells.csv"))
-  tiss$louvain_labels <- as.factor(tiss$louvain_labels)
+  tiss$cluster_labels <- as.factor(tiss$cluster_labels)
   clusters <- read.csv(paste0(results.dir, "!clusters.csv"))
   
   generatePlots(tiss, clusters$cell_type, script.type == "joint") #make plots

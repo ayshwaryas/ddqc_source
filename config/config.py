@@ -11,16 +11,15 @@ else:  # for debug outside of cluster
     LOC = "cluster"
 
     if LOC == "local":
-        DATA_DIR = "/Users/michaelalperovich/Documents/primes_storage/data/"
+        DATA_DIR = "/Users/michaelalperovich/Documents/Primes/primes_storage/data/"
     elif LOC == "drive":
         DATA_DIR = "/Volumes/easystore/primes_storage/data/"
     elif LOC == "cluster":
         DATA_DIR = "/Volumes/scqc/data/"
-    OUTPUT_DIR = "/Users/michaelalperovich/Documents/primes_storage/output_pg/"
+    OUTPUT_DIR = "/Users/michaelalperovich/Documents/proga/Primes/primes_storage/output_pg/"
 
 # CLUSTERING
 resolution = 1.4  # this resolution gives results closest to seurat
-do_batch_correction = False
 
 # FILTERING
 basic_genes_filter = 100  # basic nGenes filter (performed for all methods)
