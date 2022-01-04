@@ -65,7 +65,7 @@ if __name__ == '__main__':
         proj = input("Project: ").strip()
         tiss = input("Tissue: ").strip()
         t_id = input("Method ID:").strip()
-        for mg in [10, 50, 100, 150]:
+        for mg in [50, 100, 150]:
             mc_main(proj, tiss, mg, int(t_id))
 
     # else:  # project and task id are provided as commandline args

@@ -22,7 +22,7 @@ def create_dirs(project, tissue, clustering_method, res, method, param):
     return task_directory, task_name, results_dir
 
 
-def mc_main(project, tissue, clustering_method, task_id=2):
+def mc_main(project, tissue, clustering_method, task_id):
     is_human, annotations = get_project_info(project, tissue=tissue)
 
     adata = read_tissue(project, tissue, annotations)
@@ -66,10 +66,11 @@ if __name__ == '__main__':
     if local:  # for debug outside of cluster
         proj = input("Project: ").strip()
         tiss = input("Tissue: ").strip()
-        # cm = input("Clustering Method: ").strip()
-        t_id = input("Method ID:").strip()
-        for cm in ["louvain", "leiden", "spectral_louvain", "spectral_leiden"]:
-            mc_main(proj, tiss, cm, int(t_id))
+        #  cm = input("Clustering Method: ").strip()
+        for t_id in range(3):
+            #  t_id = input("Method ID: ").strip()
+            for cm in ["louvain", "leiden", "spectral_louvain", "spectral_leiden", "k_means", "hierarchical"]:
+                mc_main(proj, tiss, cm, int(t_id))
 
     # else:  # project and task id are provided as commandline args
     #     proj = sys.argv[1]

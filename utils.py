@@ -1,11 +1,15 @@
 import os
 from collections import Counter
+from copy import deepcopy
 
 import numpy as np
 import pandas as pd
 import pegasus as pg
 
 from config.config import DATA_DIR
+
+from sklearn.metrics import silhouette_score
+from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
 
 
 # check if the dir exists, if not - create it
@@ -51,6 +55,45 @@ def marker_dict_to_df(marker_dict, min_log_fc=0.25, min_pct=25, max_qval=0.05):
     return markers
 
 
+def kmeans_silhouette(adata):
+    max_coef, n_clusters, best_results = 0, 0, None
+    for n in range(2, 40):
+        clustering = KMeans(n_clusters=n, random_state=29).fit(adata.obsm["X_pca"])
+        sil_coef = silhouette_score(adata.obsm["X_pca"], clustering.labels_, metric='euclidean')
+        if sil_coef > max_coef:
+            max_coef = sil_coef
+            n_clusters = n
+            best_results = deepcopy(clustering)
+
+    print(f"{n_clusters} clusters found using k-means with silhouette coefficient")
+    cluster_labels = [str(t + 1) for t in best_results.labels_]
+    adata.obs["kmeans_labels"] = cluster_labels
+    adata.obs["kmeans_labels"] = pd.Categorical(adata.obs["kmeans_labels"])
+
+
+def hierarchical_silhouette(adata):
+    max_coef, n_clusters, best_results = 0, 0, None
+    for n in range(2, 40):
+        clustering = AgglomerativeClustering(n_clusters=n).fit(adata.obsm["X_pca"])
+        sil_coef = silhouette_score(adata.obsm["X_pca"], clustering.labels_, metric='euclidean')
+        if sil_coef > max_coef:
+            max_coef = sil_coef
+            n_clusters = n
+            best_results = deepcopy(clustering)
+
+    print(f"{n_clusters} clusters found using k-means with silhouette coefficient")
+    cluster_labels = [str(t + 1) for t in best_results.labels_]
+    adata.obs["hierarchical_labels"] = cluster_labels
+    adata.obs["hierarchical_labels"] = pd.Categorical(adata.obs["hierarchical_labels"])
+
+
+def dbscan(adata):
+    clustering = DBSCAN().fit(adata.obsm["X_pca"])
+    cluster_labels = [str(t + 1) for t in clustering.labels_]
+    adata.obs["dbscan_labels"] = cluster_labels
+    adata.obs["dbscan_labels"] = pd.Categorical(adata.obs["dbscan_labels"])
+
+
 # function that performs clustering; does dimensional reductions and finds DE genes if specified
 def cluster_data(adata, resolution, compute_markers=False, compute_reductions=False, clustering_method="louvain"):
     print(clustering_method)
@@ -71,6 +114,15 @@ def cluster_data(adata, resolution, compute_markers=False, compute_reductions=Fa
     elif clustering_method == "spectral_leiden":
         pg.spectral_leiden(adata, resolution=resolution, random_state=29)
         adata.obs["cluster_labels"] = adata.obs.spectral_leiden_labels
+    elif clustering_method == "k_means":
+        kmeans_silhouette(adata)
+        adata.obs["cluster_labels"] = adata.obs.kmeans_labels
+    elif clustering_method == "dbscan":
+        dbscan(adata)
+        adata.obs["cluster_labels"] = adata.obs.dbscan_labels
+    elif clustering_method == "hierarchical":
+        hierarchical_silhouette(adata)
+        adata.obs["cluster_labels"] = adata.obs.hierarchical_labels
     else:
         raise KeyError(f"Unknown clustering method {clustering_method}")
 
