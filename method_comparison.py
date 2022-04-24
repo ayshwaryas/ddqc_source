@@ -23,7 +23,7 @@ def create_dirs(project, tissue, res, method, param):
     return task_directory, task_name, results_dir
 
 
-def mc_main(project, task_id, tissue=None, param=None):
+def mc_main(project, task_id, tissue=None, param=None, run_analysis=True):
     if tissue is None:
         tissue, is_human, annotations = get_project_info(project, task_id=task_id // MC_TASKS_PER_TISSUE)
     else:
@@ -48,6 +48,9 @@ def mc_main(project, task_id, tissue=None, param=None):
                          basic_percent_mito=basic_mito_filter, mito_prefix=mito_prefix, ribo_prefix=ribo_prefix,
                          do_counts=do_counts, do_genes=do_genes, do_mito=do_mito, do_ribo=do_ribo,
                          record_path=results_dir)
+    # if running further analysis wasn't requested, quit
+    if not run_analysis:
+        exit()
 
     adata, marker_dict = cluster_data(adata, compute_markers=True, compute_reductions=True, resolution=resolution)
     adata = add_cd_scores(adata, is_human)  # add cell death scores
@@ -74,11 +77,18 @@ if __name__ == '__main__':
         t_id = int(input("Task ID (-1 to input specific tissue): ").strip())
         if t_id == -1:
             tiss = input("Tissue: ").strip()
-            t_id = input("Method ID (0-3):").strip()
+            t_id = int(input("Method ID (0-2): ").strip())
             mc_main(proj, t_id, tissue=tiss)
         else:
             mc_main(proj, t_id)
     else:  # project and task id are provided as commandline args
         proj = sys.argv[1]
         t_id = int(sys.argv[2]) - 1
-        mc_main(proj, t_id)
+        if t_id == -1:
+            tiss = sys.argv[3].strip()
+            run_a = sys.argv[4].strip() == "True"
+            mc_main(proj, t_id, tissue=tiss, run_analysis=run_a)
+        else:
+            run_a = sys.argv[3].strip() == "True"
+            mc_main(proj, t_id, run_analysis=run_a)
+
