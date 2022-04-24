@@ -11,12 +11,13 @@ else:  # for debug outside of cluster
     LOC = "cluster"
 
     if LOC == "local":
-        DATA_DIR = "/Users/michaelalperovich/Documents/Primes/primes_storage/data/"
+        DATA_DIR = "/Users/michaelalperovich/Dropbox/Primes/primes_storage/data/"
     elif LOC == "drive":
         DATA_DIR = "/Volumes/easystore/primes_storage/data/"
     elif LOC == "cluster":
         DATA_DIR = "/Volumes/scqc/data/"
-    OUTPUT_DIR = "/Users/michaelalperovich/Documents/proga/Primes/primes_storage/output_pg/"
+    OUTPUT_DIR = "/Users/michaelalperovich/Dropbox/proga/Primes/primes_storage/output_pg/"
+    OUTPUT_DIR_CLUSTER = "/Volumes/scqc/output_pg/"
 
 # CLUSTERING
 resolution = 1.4  # this resolution gives results closest to seurat

@@ -164,3 +164,4 @@ htapp,sarcoma_nuclei_V2,True,human/HTAPP/sarcoma_nuclei_V2/annotations_pg.csv
 htapp,sarcoma_nuclei_V3,True,human/HTAPP/sarcoma_nuclei_V3/annotations_pg.csv
 mouse_other,bipolar_mouse,False,Unknown
 mouse_other,retina_mouse,False,Unknown
+misc,pbmc_seurat,True,misc/pbmc_seurat/annotations.csv

@@ -19,7 +19,7 @@ def safe_mkdir(path):
 
 
 # save all relevant cell info to csv for plots in seurat
-def save_to_csv(adata, path):
+def save_to_csv(adata, path, filename="!cells.csv"):
     df = adata.obs
 
     # add dimensional reductions to data frame
@@ -30,7 +30,7 @@ def save_to_csv(adata, path):
     df["umap1"] = [t[0] for t in list(adata.obsm["X_umap"])]
     df["umap2"] = [t[1] for t in list(adata.obsm["X_umap"])]
 
-    with open(path + "!cells.csv", "w") as fout:
+    with open(path + filename, "w") as fout:
         fout.write(df.to_csv())  # write df to csv
 
 
@@ -95,12 +95,13 @@ def dbscan(adata):
 
 
 # function that performs clustering; does dimensional reductions and finds DE genes if specified
-def cluster_data(adata, resolution, compute_markers=False, compute_reductions=False, clustering_method="louvain"):
-    print(clustering_method)
+def cluster_data(adata, resolution, compute_markers=False, compute_reductions=False, clustering_method="louvain",
+                 n_components=50, k=20):
+    print("Clustering cells using:", clustering_method)
     pg.log_norm(adata)
     pg.highly_variable_features(adata, consider_batch=False)
-    pg.pca(adata, random_state=29)
-    pg.neighbors(adata, K=20, random_state=29)
+    pg.pca(adata, n_components=n_components, random_state=29)
+    pg.neighbors(adata, K=k, random_state=29)
 
     if clustering_method == "louvain":
         pg.louvain(adata, resolution=resolution, random_state=29)
