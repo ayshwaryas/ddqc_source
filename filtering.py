@@ -155,8 +155,8 @@ def filter_cells(adata, res, method, threshold, basic_n_genes=100, basic_percent
     # for cells that satisfy the condition set the value to true
     adata_copy.obs.loc[np.logical_and.reduce(filters), "passed_qc"] = True
 
-    save_to_csv(adata_copy, "!cells_initial.csv")
-    pg.write_output(adata_copy, "pg_object_initial.zarr.zip")
+    save_to_csv(adata_copy, record_path, "!cells_initial.csv")
+    pg.write_output(adata_copy, record_path + "pg_object_initial.h5ad", file_type="h5ad")
 
     adata.obs["passed_qc"] = adata_copy.obs.passed_qc  # transfer array from the copy to actual object
     pg.filter_data(adata)  # perform filtering
