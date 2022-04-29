@@ -14,7 +14,7 @@ source /broad/software/scripts/useuse
 use .python-3.8.3
 use R-3.5
 
-source /home/unix/malperov/myenv3.8/bin/activate
+source /home/unix/malperov/pegasusenv/bin/activate
 
-cd /ahg/regevdata/projects/scqc/code
-python run_tissue.py $1 $2
+cd /home/unix/malperov/Primes2019
+python submission/run_tissue.py $1 $2 $3 $4

@@ -6,7 +6,8 @@ import pegasusio as io
 from config.config import DATA_DIR
 
 
-def get_project_info(project=None, task_id=None, tissue=None):  # function that parses projects.csv and returns relevant info
+# function that parses projects.csv and returns relevant info
+def get_project_info(project=None, task_id=None, tissue=None):
     try:
         projects = pd.read_csv("config/read_info/projects.csv")
     except FileNotFoundError:

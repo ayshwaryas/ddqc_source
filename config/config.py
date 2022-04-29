@@ -5,8 +5,10 @@ LOCAL = local  # needed for running outside the cluster
 
 # PATHS
 if not local:
-    DATA_DIR = "/ahg/regevdata/projects/scqc/data/"  # directory with all data
-    OUTPUT_DIR = "/ahg/regevdata/projects/scqc/output_pg/"  # output directory
+    # DATA_DIR = "/ahg/regevdata/projects/scqc/data/"  # directory with all data
+    # OUTPUT_DIR = "/ahg/regevdata/projects/scqc/output_pg/"  # output directory
+    DATA_DIR = "/broad/kuchroolab/ayshwarya/scqc/data/"
+    OUTPUT_DIR = "/broad/kuchroolab/ayshwarya/scqc/output_pg/"
 else:  # for debug outside of cluster
     LOC = "cluster"
 
