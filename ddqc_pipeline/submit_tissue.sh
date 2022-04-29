@@ -16,5 +16,5 @@ use R-3.5
 
 source /home/unix/malperov/pegasusenv/bin/activate
 
-cd /home/unix/malperov/Primes2019
+cd /home/unix/malperov/Primes2019/ddqc_pipeline/
 python submission/run_tissue.py $1 $2 $3 $4

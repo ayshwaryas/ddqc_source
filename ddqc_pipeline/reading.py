@@ -9,7 +9,7 @@ from config.config import DATA_DIR
 # function that parses projects.csv and returns relevant info
 def get_project_info(project=None, task_id=None, tissue=None):
     try:
-        projects = pd.read_csv("config/read_info/projects.csv")
+        projects = pd.read_csv("../config/read_info/projects.csv")
     except FileNotFoundError:
         projects = pd.read_csv("../config/read_info/projects.csv")
     if project is None:
