@@ -4,7 +4,7 @@ import traceback
 
 from ddqc_pipeline.method_comparison import mc_main
 from ddqc_pipeline.joint_clustering_old import joint_main
-from config.config import MC_TASKS_PER_TISSUE, OUTPUT_DIR
+from ddqc_pipeline.config.config import MC_TASKS_PER_TISSUE, OUTPUT_DIR
 from ddqc_pipeline.reading import get_project_info
 
 

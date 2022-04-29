@@ -1,5 +1,5 @@
 import pandas as pd
-from config.config import OUTPUT_DIR_CLUSTER
+from ddqc_pipeline.config.config import OUTPUT_DIR_CLUSTER
 import os
 
 

@@ -1,7 +1,6 @@
 import os
 
 import pandas as pd
-import pegasusio as io
 
 from config.config import DATA_DIR
 
@@ -9,9 +8,9 @@ from config.config import DATA_DIR
 # function that parses projects.csv and returns relevant info
 def get_project_info(project=None, task_id=None, tissue=None):
     try:
-        projects = pd.read_csv("../config/read_info/projects.csv")
+        projects = pd.read_csv("config/read_info/projects.csv")
     except FileNotFoundError:
-        projects = pd.read_csv("../config/read_info/projects.csv")
+        projects = pd.read_csv("config/read_info/projects.csv")
     if project is None:
         return projects
     assert project in set(projects['project'])  # check if project exists in project list
@@ -47,6 +46,8 @@ def read_tissue(project, tissue, annotations="Unknown"):  # function that reads 
         dataset_list['Location'] = [DATA_DIR + t for t in dataset_list['Location']]  # update location with relevant directory prefix
     with open(read_info_filename, "w") as fout:  # write modified csv
         fout.write(dataset_list.to_csv())
+
+    import pegasusio as io
     adata = io.aggregate_matrices(read_info_filename)
     os.remove(read_info_filename)  # remove current read info copy
 

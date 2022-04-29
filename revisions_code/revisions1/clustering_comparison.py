@@ -1,6 +1,6 @@
 import subprocess
 
-from config.config import *
+from ddqc_pipeline.config.config import *
 from ddqc_pipeline.filtering import filter_cells
 from ddqc_pipeline.reading import read_tissue, get_project_info
 from ddqc_pipeline.utils import cluster_data, safe_mkdir, add_cd_scores, marker_dict_to_df, save_to_csv, assign_cell_types
