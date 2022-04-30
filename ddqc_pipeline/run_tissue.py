@@ -6,8 +6,8 @@ from config.config import MC_TASKS_PER_TISSUE
 
 project = sys.argv[1]
 tissue = sys.argv[2]
-method_id = sys.argv[3]
-run_analysis = sys.argv[4]
+method_id = int(sys.argv[3])
+run_analysis = sys.argv[4] == "True"
 
 if method_id == -1:
     for method in range(MC_TASKS_PER_TISSUE):

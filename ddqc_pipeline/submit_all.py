@@ -21,7 +21,7 @@ COMMAND = """#!/bin/bash
 #$ -binding linear:6
 
 #$ -o {path}/logs/
-#$ -N {project}-{tissue}-method={method}
+#$ -N {project}-{tissue}-method{method}
 
 source /broad/software/scripts/useuse
 use .python-3.8.3
