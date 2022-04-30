@@ -39,8 +39,8 @@ projects = get_project_info()
 for i in projects.iterrows():
     project = i[1]["project"]
     tissue = i[1]["tissue"]
+
     cmd = COMMAND.format(path=PATH, project=project, tissue=tissue, method=method, run_analysis=run_analysis)
-    if project == "tabula_muris" and tissue == "Lung":
-        file = PATH / f"scripts/{project}_{tissue}_{method}.sh"
-        file.write_text(cmd)
-        os.system(f"qsub {file.absolute()}")
+    file = PATH / f"scripts/{project}_{tissue}_{method}.sh"
+    file.write_text(cmd)
+    os.system(f"qsub {file.absolute()}")
