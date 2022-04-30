@@ -1,13 +1,15 @@
 import os
 import pathlib
+import shutil
 import sys
 
 from config.config import DATA_DIR
 from reading import get_project_info
 
 PATH = pathlib.Path(DATA_DIR).parent / "submit_info"
-(PATH / "logs").mkdir()
-(PATH / "scripts").mkdir()
+shutil.rmtree(PATH.absolute())
+(PATH / "logs").mkdir(parents=True, exist_ok=True)
+(PATH / "scripts").mkdir(parents=True, exist_ok=True)
 
 COMMAND = """#!/bin/bash
 
@@ -19,7 +21,7 @@ COMMAND = """#!/bin/bash
 #$ -binding linear:6
 
 #$ -o {path}/logs/
-#$ -N {project}-{tissue}-{method}
+#$ -N {project}-{tissue}-method={method}
 
 source /broad/software/scripts/useuse
 use .python-3.8.3
