@@ -7,7 +7,7 @@ from config.config import DATA_DIR
 from reading import get_project_info
 
 PATH = pathlib.Path(DATA_DIR).parent / "submit_info"
-shutil.rmtree(PATH.absolute(ignore_errors=True))
+shutil.rmtree(PATH.absolute(), ignore_errors=True)
 (PATH / "logs").mkdir(parents=True, exist_ok=True)
 (PATH / "scripts").mkdir(parents=True, exist_ok=True)
 
