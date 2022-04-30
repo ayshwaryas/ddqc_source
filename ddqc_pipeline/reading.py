@@ -1,5 +1,4 @@
 import os
-
 import pandas as pd
 
 from config.config import DATA_DIR
