@@ -27,7 +27,7 @@ use R-3.5
 
 source /home/unix/malperov/pegasusenv/bin/activate
 cd /home/unix/malperov/Primes-2019/ddqc_pipeline/
-python submission/run_tissue.py {project} {tissue} {method} {run_analysis}"""
+python run_tissue.py {project} {tissue} {method} {run_analysis}"""
 
 
 method = sys.argv[1]
