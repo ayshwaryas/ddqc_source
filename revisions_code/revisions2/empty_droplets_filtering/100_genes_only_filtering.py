@@ -12,4 +12,4 @@ adata = read_tissue(project=project, tissue=tissue, annotations=annotations)
 mito_prefix = MITO_PREFIXES["human"] if is_human else MITO_PREFIXES["mouse"]
 ribo_prefix = RIBO_PREFIXES["human"] if is_human else RIBO_PREFIXES["mouse"]
 adata = initial_qc(adata, n_genes=100, percent_mito=100, mito_prefix=mito_prefix, ribo_prefix=ribo_prefix)
-save_to_csv(adata, f"{OUTPUT_DIR}{project}/{tissue}/1.4-mad-2/!cells_initial_100genes_only.csv")
+save_to_csv(adata, f"{OUTPUT_DIR}{project}/{tissue}/1.4-mad-2/!cells_initial_100genes_only.csv", save_reductions=False)

@@ -19,16 +19,17 @@ def safe_mkdir(path):
 
 
 # save all relevant cell info to csv for plots in seurat
-def save_to_csv(adata, path, filename="!cells.csv"):
+def save_to_csv(adata, path, filename="!cells.csv", save_reductions=True):
     df = adata.obs
 
-    # add dimensional reductions to data frame
-    df["pca1"] = [t[0] for t in list(adata.obsm["X_pca"])]
-    df["pca2"] = [t[1] for t in list(adata.obsm["X_pca"])]
+    if save_reductions:
+        # add dimensional reductions to data frame
+        df["pca1"] = [t[0] for t in list(adata.obsm["X_pca"])]
+        df["pca2"] = [t[1] for t in list(adata.obsm["X_pca"])]
 
-    # tsne is turned off for now
-    df["umap1"] = [t[0] for t in list(adata.obsm["X_umap"])]
-    df["umap2"] = [t[1] for t in list(adata.obsm["X_umap"])]
+        # tsne is turned off for now
+        df["umap1"] = [t[0] for t in list(adata.obsm["X_umap"])]
+        df["umap2"] = [t[1] for t in list(adata.obsm["X_umap"])]
 
     with open(path + filename, "w") as fout:
         fout.write(df.to_csv())  # write df to csv
