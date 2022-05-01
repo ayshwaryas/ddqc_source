@@ -1,4 +1,4 @@
-from ddqc_pipeline.config.local_config import local
+from .local_config import local
 
 
 LOCAL = local  # needed for running outside the cluster

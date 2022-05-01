@@ -4,10 +4,10 @@ import sys
 import pandas as pd
 import pegasus as pg
 
-from config.config import *
-from filtering import initial_qc
-from reading import get_project_info, read_tissue
-from utils import safe_mkdir, cluster_data, add_cd_scores, marker_dict_to_df, assign_cell_types, save_to_csv
+from .config.config import *
+from .filtering import initial_qc
+from .reading import get_project_info, read_tissue
+from .utils import safe_mkdir, cluster_data, add_cd_scores, marker_dict_to_df, assign_cell_types, save_to_csv
 
 
 # function that creates all the relevant directories

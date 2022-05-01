@@ -6,10 +6,10 @@ import numpy as np
 import pandas as pd
 import pegasus as pg
 
-from config.config import DATA_DIR
-
 from sklearn.metrics import silhouette_score
 from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
+
+from .config.config import DATA_DIR
 
 
 # check if the dir exists, if not - create it

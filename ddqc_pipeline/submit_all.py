@@ -3,8 +3,8 @@ import pathlib
 import shutil
 import sys
 
-from config.config import DATA_DIR
-from reading import get_project_info
+from .config.config import DATA_DIR
+from .reading import get_project_info
 
 PATH = pathlib.Path(DATA_DIR).parent / "submit_info"
 shutil.rmtree(PATH.absolute(), ignore_errors=True)

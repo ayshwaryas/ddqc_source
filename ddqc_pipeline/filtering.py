@@ -3,7 +3,7 @@ import re
 import numpy as np
 import pegasus as pg
 
-from utils import cluster_data, save_to_csv
+from .utils import cluster_data, save_to_csv
 
 INF = 10 ** 10  # infinity for cases no filtering is required
 
