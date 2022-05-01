@@ -1,7 +1,7 @@
 from cell_classification.mad_filtering import filter_cells
 import pandas as pd
 
-#path = "Z:\\revisions\\revisions2\\adaptive_mad_threshold\\"
+# path = "Z:\\revisions\\revisions2\\adaptive_mad_threshold\\"
 path = "C:\\Users\\misha\\Downloads\\adaptive_mad_threshold\\"
 tissue = "heart"
 cells = pd.read_csv(path + tissue + "_initial_clustering.csv", index_col=0)

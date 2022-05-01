@@ -83,7 +83,11 @@ def filter_cells(data, classification, method, threshold, n_genes_lower_bound=20
 
 
 if __name__ == '__main__':
-    classification_data = pd.read_csv("Z:\\cell_classification\\classification_mad_results.csv", index_col=0)
-    for c in ["single_r", "azimuth", "cell_typist", "ddqc_cluster"]:
+    path = "Z:\\revisions\\revisions2\\cell_classification\\"
+    tissue = "krasnow_lung"
+    classification_data = pd.read_csv(f"{path}{tissue}\\summary.csv", index_col=0)
+    for c in ["cell_typist", "ddqc_cluster"]:  # "single_r", "azimuth",
         classification_data = filter_cells(classification_data, classification=c, method="mad", threshold=2,
                                            do_counts=False)
+    with open(f"{path}{tissue}\\classification_mad_results.csv", "w") as file:
+        file.write(classification_data.to_csv())

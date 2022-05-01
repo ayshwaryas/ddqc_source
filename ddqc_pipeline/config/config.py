@@ -1,25 +1,16 @@
-from config.local_config import local
+from ddqc_pipeline.config.local_config import local
 
 
 LOCAL = local  # needed for running outside the cluster
 
 # PATHS
 if not local:
-    # DATA_DIR = "/ahg/regevdata/projects/scqc/data/"  # directory with all data
-    # OUTPUT_DIR = "/ahg/regevdata/projects/scqc/output_pg/"  # output directory
     DATA_DIR = "/broad/kuchroolab/ayshwarya/scqc/data/"
     OUTPUT_DIR = "/broad/kuchroolab/ayshwarya/scqc/output_pg/"
 else:  # for debug outside of cluster
-    LOC = "cluster"
-
-    if LOC == "local":
-        DATA_DIR = "/Users/michaelalperovich/Dropbox/Primes/primes_storage/data/"
-    elif LOC == "drive":
-        DATA_DIR = "/Volumes/easystore/primes_storage/data/"
-    elif LOC == "cluster":
-        DATA_DIR = "/Volumes/scqc/data/"
-    OUTPUT_DIR = "/Users/michaelalperovich/Dropbox/proga/Primes/primes_storage/output_pg/"
-    OUTPUT_DIR_CLUSTER = "/Volumes/scqc/output_pg/"
+    DATA_DIR = "Z:\\data\\"
+    OUTPUT_DIR = ""
+    OUTPUT_DIR_CLUSTER = "Z:\\output_pg\\"
 
 # CLUSTERING
 resolution = 1.4  # this resolution gives results closest to seurat

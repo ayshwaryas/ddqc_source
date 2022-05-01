@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-from config.config import DATA_DIR
+from ddqc_pipeline.config.config import DATA_DIR
 
 
 # function that parses projects.csv and returns relevant info

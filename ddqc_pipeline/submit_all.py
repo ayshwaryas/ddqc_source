@@ -21,6 +21,7 @@ COMMAND = """#!/bin/bash
 #$ -binding linear:6
 
 #$ -o {path}/logs/
+#$ -j y
 #$ -N {project}-{tissue}-method{method}
 
 source /broad/software/scripts/useuse
