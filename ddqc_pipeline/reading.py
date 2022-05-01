@@ -35,7 +35,7 @@ def read_tissue(project, tissue, annotations="Unknown"):  # function that reads 
         dataset_list_path = "config/read_info/{}/{}.csv".format(project, tissue)  # path to tissue read info
         assert os.path.isfile(dataset_list_path)  # check if tissue read info exists
     except AssertionError:
-        dataset_list_path = "../config/read_info/{}/{}.csv".format(project, tissue)  # path to tissue read info
+        dataset_list_path = "ddqc_pipeline/config/read_info/{}/{}.csv".format(project, tissue)  # path to tissue read info
         assert os.path.isfile(dataset_list_path)  # check if tissue read info exists
     read_info_filename = "read_info_{}_{}.csv".format(project, tissue)  # filename of a current read info copy
     dataset_list = pd.read_csv(dataset_list_path)
