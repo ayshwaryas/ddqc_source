@@ -9,7 +9,7 @@ def get_project_info(project=None, task_id=None, tissue=None):
     try:
         projects = pd.read_csv("config/read_info/projects.csv")
     except FileNotFoundError:
-        projects = pd.read_csv("config/read_info/projects.csv")
+        projects = pd.read_csv("ddqc_pipeline/config/read_info/projects.csv")
     if project is None:
         return projects
     assert project in set(projects['project'])  # check if project exists in project list
