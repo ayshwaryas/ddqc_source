@@ -10,7 +10,7 @@ FILE_PATH = pathlib.Path(__file__).parent.resolve()
 
 # function that parses projects.csv and returns relevant info
 def get_project_info(project=None, task_id=None, tissue=None):
-    projects = pd.read_csv((FILE_PATH / "/config/read_info/projects.csv").absolute())
+    projects = pd.read_csv((FILE_PATH / "config/read_info/projects.csv").absolute())
     if project is None:
         return projects
     assert project in set(projects['project'])  # check if project exists in project list

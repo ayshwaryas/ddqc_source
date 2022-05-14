@@ -1,12 +1,11 @@
 import os
 
-import numpy as np
 import pandas as pd
-import pegasus as pg
+
 
 from ddqc_pipeline.config.config import DATA_DIR, MITO_PREFIXES, RIBO_PREFIXES, resolution, do_counts, do_genes, \
     do_mito, do_ribo
-from ddqc_pipeline.filtering import initial_qc, filter_cells
+from ddqc_pipeline.filtering import filter_cells
 from ddqc_pipeline.method_comparison import create_dirs
 from ddqc_pipeline.reading import get_project_info, read_tissue
 
@@ -14,7 +13,6 @@ from ddqc_pipeline.reading import get_project_info, read_tissue
 def initial_qc_emptydrops(adata, project, tissue, is_human, fdr_cutoff=0.01):
     species = "human" if is_human else "mouse"
     data_path = DATA_DIR + f"{species}/{project}/{tissue}/emptydrops/"
-
     emptydrops_results = None
     for sample in os.listdir(data_path):
         er = pd.read_csv(f"{data_path}/{sample}", sep="\t", index_col=0)
@@ -23,7 +21,6 @@ def initial_qc_emptydrops(adata, project, tissue, is_human, fdr_cutoff=0.01):
             emptydrops_results = er.copy()
         else:
             emptydrops_results = pd.concat([emptydrops_results, er])
-
     adata["FDR"] = emptydrops_results.FDR
     adata = adata[adata.FDR <= fdr_cutoff]
     return adata
@@ -48,4 +45,4 @@ def main():
                          record_path=results_dir, initial_result_name="initial_emptydrops")
 
 
-
+main()

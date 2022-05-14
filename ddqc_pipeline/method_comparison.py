@@ -10,6 +10,7 @@ from .utils import cluster_data, safe_mkdir, add_cd_scores, marker_dict_to_df, s
 
 FILE_PATH = pathlib.Path(__file__).parent.resolve()
 
+
 # function that creates all the relevant directories
 def create_dirs(project, tissue, res, method, param):
     task_directory = "{}-{}-{}".format(res, method, param)  # name of the directory for this task
@@ -94,4 +95,3 @@ if __name__ == '__main__':
         else:
             run_a = sys.argv[3].strip() == "True"
             mc_main(proj, t_id, run_analysis=run_a)
-
