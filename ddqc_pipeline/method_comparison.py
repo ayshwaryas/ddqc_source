@@ -1,3 +1,4 @@
+import pathlib
 import subprocess
 import sys
 
@@ -6,6 +7,8 @@ from .filtering import filter_cells
 from .reading import read_tissue, get_project_info
 from .utils import cluster_data, safe_mkdir, add_cd_scores, marker_dict_to_df, save_to_csv, assign_cell_types
 
+
+FILE_PATH = pathlib.Path(__file__).parent.resolve()
 
 # function that creates all the relevant directories
 def create_dirs(project, tissue, res, method, param):

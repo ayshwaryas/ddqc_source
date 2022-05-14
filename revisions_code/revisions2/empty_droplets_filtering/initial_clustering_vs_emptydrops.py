@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 
 
@@ -5,13 +7,18 @@ FDR_CUTOFF = 0.01
 
 species = "mouse"
 project = "tabula_muris"
-tissue = "Heart_and_Aorta"
+tissue = "Lung"
 data_path = f"Z:\\data\\{species}\\{project}\\{tissue}"
 output_path = f"Z:\\output_pg\\{project}\\{tissue}\\1.4-mad-2"
 
-sample = "Heart_and_Aorta-10X_P7_4"
-emptydrops_results = pd.read_csv(f"{data_path}\\emptydrops\\{sample}.tsv", sep="\t", index_col=0)
-emptydrops_results.index = [sample + "-" + t[:-2] for t in emptydrops_results.index]
+emptydrops_results = None
+for sample in os.listdir(f"{data_path}\\emptydrops\\"):
+    er = pd.read_csv(f"{data_path}\\emptydrops\\{sample}", sep="\t", index_col=0)
+    er.index = [sample[:-4] + "-" + t[:-2] for t in er.index]
+    if emptydrops_results is None:
+        emptydrops_results = er.copy()
+    else:
+        emptydrops_results = pd.concat([emptydrops_results, er])
 
 initial_clustering_results = pd.read_csv(f"{output_path}\\!cells_initial.csv", index_col=0)
 initial_clustering_results["FDR"] = emptydrops_results.FDR

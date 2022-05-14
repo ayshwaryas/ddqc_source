@@ -109,8 +109,8 @@ def metric_filter(adata, method, param, metric_name, do_lower_co=False, do_upper
 # record_path - path for recording filtered cells CSVs (keep it None if not needed)
 def filter_cells(adata, res, method, threshold, basic_n_genes=100, basic_percent_mito=80, mito_prefix="MT-",
                  ribo_prefix=r"^Rp[sl]\d", do_counts=True, do_genes=True, do_mito=True, do_ribo=False, record_path=None,
-                 n_genes_lower_bound=200, percent_mito_upper_bound=10, clustering_method="louvain", n_components=50,
-                 k=20):
+                 initial_result_name="initial", n_genes_lower_bound=200, percent_mito_upper_bound=10,
+                 clustering_method="louvain", n_components=50, k=20):
     adata = initial_qc(adata, basic_n_genes, basic_percent_mito, mito_prefix,
                        ribo_prefix)  # perform initial qc
 
@@ -122,26 +122,29 @@ def filter_cells(adata, res, method, threshold, basic_n_genes=100, basic_percent
     adata_copy = cluster_data(adata_copy, res, clustering_method=clustering_method, n_components=n_components,
                               k=k, compute_reductions=True)  # do initial clustering of adata
 
+    record_path_step = record_path if initial_result_name == "initial" else None
+
     # for each metric if do_metric is true, the filtering will be performed
     if do_counts:
-        adata_copy = metric_filter(adata_copy, method, threshold, "n_counts", do_lower_co=True, record_path=record_path)
+        adata_copy = metric_filter(adata_copy, method, threshold, "n_counts", do_lower_co=True,
+                                   record_path=record_path_step)
     else:
         adata_copy.obs["n_counts_qc_pass"] = True
     if do_genes:
         adata_copy = metric_filter(adata_copy, method, threshold, "n_genes", do_lower_co=True,
                                    lower_bound=n_genes_lower_bound,
-                                   record_path=record_path)
+                                   record_path=record_path_step)
     else:
         adata_copy.obs["n_genes_qc_pass"] = True
     if do_mito:
         adata_copy = metric_filter(adata_copy, method, threshold, "percent_mito", do_upper_co=True,
                                    upper_bound=percent_mito_upper_bound,
-                                   record_path=record_path)
+                                   record_path=record_path_step)
     else:
         adata_copy.obs["percent_mito_qc_pass"] = True
     if do_ribo:
         adata_copy = metric_filter(adata_copy, method, threshold, "percent_ribo", do_upper_co=True,
-                                   record_path=record_path)
+                                   record_path=record_path_step)
     else:
         adata_copy.obs["percent_ribo_qc_pass"] = True
 
@@ -155,8 +158,8 @@ def filter_cells(adata, res, method, threshold, basic_n_genes=100, basic_percent
     # for cells that satisfy the condition set the value to true
     adata_copy.obs.loc[np.logical_and.reduce(filters), "passed_qc"] = True
 
-    save_to_csv(adata_copy, record_path, "!cells_initial.csv")
-    pg.write_output(adata_copy, record_path + "pg_object_initial.h5ad", file_type="h5ad")
+    save_to_csv(adata_copy, record_path, f"!cells_{initial_result_name}.csv")
+    pg.write_output(adata_copy, record_path + f"pg_object_{initial_result_name}.h5ad", file_type="h5ad")
 
     adata.obs["passed_qc"] = adata_copy.obs.passed_qc  # transfer array from the copy to actual object
     pg.filter_data(adata)  # perform filtering

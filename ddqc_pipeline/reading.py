@@ -1,15 +1,16 @@
+import pathlib
 import os
 import pandas as pd
 
 from .config.config import DATA_DIR
 
 
+FILE_PATH = pathlib.Path(__file__).parent.resolve()
+
+
 # function that parses projects.csv and returns relevant info
 def get_project_info(project=None, task_id=None, tissue=None):
-    try:
-        projects = pd.read_csv("config/read_info/projects.csv")
-    except FileNotFoundError:
-        projects = pd.read_csv("ddqc_pipeline/config/read_info/projects.csv")
+    projects = pd.read_csv((FILE_PATH / "/config/read_info/projects.csv").absolute())
     if project is None:
         return projects
     assert project in set(projects['project'])  # check if project exists in project list
@@ -31,18 +32,15 @@ def get_project_info(project=None, task_id=None, tissue=None):
 
 
 def read_tissue(project, tissue, annotations="Unknown"):  # function that reads and aggregates one tissue
-    try:
-        dataset_list_path = "config/read_info/{}/{}.csv".format(project, tissue)  # path to tissue read info
-        assert os.path.isfile(dataset_list_path)  # check if tissue read info exists
-    except AssertionError:
-        dataset_list_path = "ddqc_pipeline/config/read_info/{}/{}.csv".format(project, tissue)  # path to tissue read info
-        assert os.path.isfile(dataset_list_path)  # check if tissue read info exists
+    dataset_list_path = (FILE_PATH / f"config/read_info/{project}/{tissue}.csv")  # path to tissue read info
+    assert os.path.isfile(dataset_list_path)  # check if tissue read info exists
     read_info_filename = "read_info_{}_{}.csv".format(project, tissue)  # filename of a current read info copy
     dataset_list = pd.read_csv(dataset_list_path)
     if annotations == "Absolute":  # if data is stored outside DATA_DIR and csv had a direct path
         pass
     else:
-        dataset_list['Location'] = [DATA_DIR + t for t in dataset_list['Location']]  # update location with relevant directory prefix
+        # update location with relevant directory prefix
+        dataset_list['Location'] = [DATA_DIR + t for t in dataset_list['Location']]
     with open(read_info_filename, "w") as fout:  # write modified csv
         fout.write(dataset_list.to_csv())
 
