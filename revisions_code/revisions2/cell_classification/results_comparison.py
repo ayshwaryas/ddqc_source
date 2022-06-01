@@ -9,18 +9,18 @@ ddqc_cells = cells[cells.ddqc_cluster_passed_qc]
 cell_typist_cells = cells[cells.cell_typist_passed_qc]
 
 
-# for cluster in sorted(pd.unique(ddqc_cells.ddqc_cluster)):
-#     cluster_cells = ddqc_cells[ddqc_cells.ddqc_cluster == cluster]
-#     n_cells = len(cluster_cells.index)
-#
-#     for i in range(3):
-#         ct_cell_type = cluster_cells.cell_typist.value_counts().index[i]
-#         ct_n_cells = cluster_cells.cell_typist.value_counts()[ct_cell_type]
-#         print(f"{i + 1}. ddqc cluster {cluster}: {ct_n_cells} out of {n_cells} ({round(ct_n_cells / n_cells * 100, 3)}%) are {ct_cell_type}")
-#
-#     n_cells_passed_ct = len(cluster_cells[cluster_cells.cell_typist_passed_qc].index)
-#     print(f"ddqc cluster {cluster}: {n_cells_passed_ct} out of {n_cells} ({round(n_cells_passed_ct / n_cells * 100, 3)}%) passed Cell Typist")
-#     print()
+for cluster in sorted(pd.unique(ddqc_cells.ddqc_cluster)):
+    cluster_cells = ddqc_cells[ddqc_cells.ddqc_cluster == cluster]
+    n_cells = len(cluster_cells.index)
+
+    for i in range(3):
+        ct_cell_type = cluster_cells.cell_typist.value_counts().index[i]
+        ct_n_cells = cluster_cells.cell_typist.value_counts()[ct_cell_type]
+        print(f"{i + 1}. ddqc cluster {cluster}: {ct_n_cells} out of {n_cells} ({round(ct_n_cells / n_cells * 100, 3)}%) are {ct_cell_type}")
+
+    n_cells_passed_ct = len(cluster_cells[cluster_cells.cell_typist_passed_qc].index)
+    print(f"ddqc cluster {cluster}: {n_cells_passed_ct} out of {n_cells} ({round(n_cells_passed_ct / n_cells * 100, 3)}%) passed Cell Typist")
+    print()
 
 
 for cell_type in sorted(pd.unique(cell_typist_cells.cell_typist)):
@@ -35,3 +35,17 @@ for cell_type in sorted(pd.unique(cell_typist_cells.cell_typist)):
     n_cells_passed_ddqc = len(cell_type_cells[cell_type_cells.ddqc_cluster_passed_qc].index)
     print(f"Cell Typist {cell_type}: {n_cells_passed_ddqc} out of {n_cells} ({round(n_cells_passed_ddqc / n_cells * 100, 3)}%) passed ddqc")
     print()
+
+
+low_genes_ddqc = ddqc_cells[(ddqc_cells.n_genes <= 200) & (~ddqc_cells.cell_typist_passed_qc)]
+print(low_genes_ddqc.ddqc_cluster.value_counts())
+for cluster in sorted(pd.unique(low_genes_ddqc.ddqc_cluster)):
+    cluster_cells = low_genes_ddqc[low_genes_ddqc.ddqc_cluster == cluster]
+    n_cells = len(cluster_cells.index)
+
+    for i in range(min(3, len(cluster_cells.cell_typist.value_counts().index))):
+        ct_cell_type = cluster_cells.cell_typist.value_counts().index[i]
+        ct_n_cells = cluster_cells.cell_typist.value_counts()[ct_cell_type]
+        print(f"{i + 1}. ddqc cluster {cluster}: {ct_n_cells} out of {n_cells} ({round(ct_n_cells / n_cells * 100, 3)}%) are {ct_cell_type}")
+    print()
+

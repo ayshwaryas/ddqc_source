@@ -1,6 +1,8 @@
 import os
+import sys
 
 import pandas as pd
+import pegasus as pg
 
 
 from ddqc_pipeline.config.config import DATA_DIR, MITO_PREFIXES, RIBO_PREFIXES, resolution, do_counts, do_genes, \
@@ -21,14 +23,15 @@ def initial_qc_emptydrops(adata, project, tissue, is_human, fdr_cutoff=0.01):
             emptydrops_results = er.copy()
         else:
             emptydrops_results = pd.concat([emptydrops_results, er])
-    adata["FDR"] = emptydrops_results.FDR
-    adata = adata[adata.FDR <= fdr_cutoff]
+
+    adata.obs["FDR"] = emptydrops_results.FDR
+    adata.obs["passed_qc"] = False
+    adata.obs.loc[adata.obs.FDR <= fdr_cutoff, "passed_qc"] = True
+    pg.filter_data(adata)
     return adata
 
 
-def main():
-    project = "tabula_muris"
-    tissue = "Heart_and_Aorta"
+def main(project, tissue):
     method = "mad"
     param = 2
 
@@ -36,13 +39,14 @@ def main():
     adata = read_tissue(project, tissue, annotations)
     task_directory, task_name, results_dir = create_dirs(project, tissue, resolution, method, param)
 
-    adata = initial_qc_emptydrops(adata, project, tissue, annotations)
+    adata = initial_qc_emptydrops(adata, project, tissue, is_human)
     mito_prefix = MITO_PREFIXES["human"] if is_human else MITO_PREFIXES["mouse"]
     ribo_prefix = RIBO_PREFIXES["human"] if is_human else RIBO_PREFIXES["mouse"]
     adata = filter_cells(adata, resolution, method, param, basic_n_genes=0,
                          basic_percent_mito=100, mito_prefix=mito_prefix, ribo_prefix=ribo_prefix,
                          do_counts=do_counts, do_genes=do_genes, do_mito=do_mito, do_ribo=do_ribo,
                          record_path=results_dir, initial_result_name="initial_emptydrops")
+    print(adata)
 
 
-main()
+main(sys.argv[1], sys.argv[2])
