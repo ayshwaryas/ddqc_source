@@ -1,0 +1,44 @@
+```{r}
+library(dplyr)
+library(Seurat)
+data <- Read10X(data.dir = "Z:\\data\\misc\\pbmc_seurat\\")
+#data <- Read10X(data.dir = "Z:\\data\\mouse\\tabula_muris\\Heart_and_Aorta\\Heart_and_Aorta-10X_P7_4\\")
+seurat.obj <- CreateSeuratObject(counts = data, project = "pbmc3k", min.cells = 0, min.features = 0)
+```
+
+```{r}
+#seurat.obj[["percent.mt"]] <- PercentageFeatureSet(seurat.obj, pattern = "^mt-")
+seurat.obj <- subset(seurat.obj, subset = nFeature_RNA > 10)
+```
+
+
+```{r}
+library(celldex)
+library(SingleR)
+ref.data <- celldex::HumanPrimaryCellAtlasData()
+
+# Performing predictions.
+predictions <- SingleR(test=seurat.obj@assays$RNA@data, assay.type.test=1, 
+    ref=ref.data, labels=ref.data$label.main)
+
+table(predictions$labels)
+```
+```{r}
+labels <- predictions$labels
+names(labels) <- rownames(predictions) 
+seurat.obj <- AddMetaData(
+	object = seurat.obj,
+	metadata = predictions$labels,
+	col.name = "predictions")
+write.csv(labels, "Z:\\cell_classification\\pbmc_SingleR.csv")
+saveRDS(seurat.obj, "Z:\\cell_classification\\pbmc_unfiltered.rds")
+```
+
+```{r}
+predictions <- read.delim('Z:\\data\\misc\\pbmc_seurat\\azimuth_pred.tsv', row.names = 1)
+pbmc <- AddMetaData(
+	object = pbmc,
+	metadata = predictions)
+```
+
+
