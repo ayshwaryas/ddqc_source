@@ -1,5 +1,5 @@
 library(dplyr)
-source("plotting.R")
+source("config.R")
 
 convert.cell.names <- function(cell.names) {
   return(sapply(strsplit(cell.names, split="-"), last))
